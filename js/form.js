@@ -51,3 +51,83 @@ document
 });
 
 updateForm();
+
+const deploymentType =
+document.getElementById("deploymentType");
+
+const dynamicFields =
+document.getElementById("dynamicFields");
+
+deploymentType.addEventListener("change", () => {
+
+    const value = deploymentType.value;
+
+    if(value === "application"){
+
+        dynamicFields.innerHTML = `
+            <label>Frontend Type</label>
+            <select id="frontend">
+                <option>React</option>
+                <option>Angular</option>
+                <option>Vue</option>
+                <option>HTML/CSS/JS</option>
+            </select>
+
+            <label>Backend Type</label>
+            <select id="backend">
+                <option>NodeJS</option>
+                <option>Python</option>
+                <option>Java</option>
+                <option>.NET</option>
+            </select>
+
+            <label>Deployment Target</label>
+            <select id="target">
+                <option>Azure App Service</option>
+                <option>Azure VM</option>
+            </select>
+        `;
+    }
+
+    else if(value === "infrastructure"){
+
+        dynamicFields.innerHTML = `
+            <label>IaC Tool</label>
+            <select id="iac">
+                <option>Terraform</option>
+            </select>
+
+            <label>Cloud Provider</label>
+            <select id="cloud">
+                <option>Azure</option>
+            </select>
+
+            <label>Resources</label>
+
+            <div class="checkbox-group">
+
+                <label>
+                    <input type="checkbox">
+                    Resource Group
+                </label>
+
+                <label>
+                    <input type="checkbox">
+                    Virtual Network
+                </label>
+
+                <label>
+                    <input type="checkbox">
+                    Virtual Machine
+                </label>
+
+                <label>
+                    <input type="checkbox">
+                    Storage Account
+                </label>
+
+            </div>
+        `;
+    }
+
+});

@@ -82,3 +82,11 @@ button{
 .nextBtn{
     margin-top:20px;
 }
+.checkbox-group{
+    margin-top:15px;
+}
+
+.checkbox-group label{
+    display:block;
+    margin:10px 0;
+}
