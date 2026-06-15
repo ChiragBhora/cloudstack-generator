@@ -19,7 +19,7 @@
 
     <form id="multiStepForm">
 
-        <!-- Step 1 -->
+        <!-- STEP 1 -->
         <div class="step active">
 
             <h2>Project Details</h2>
@@ -43,7 +43,7 @@
 
         </div>
 
-        <!-- Step 2 -->
+        <!-- STEP 2 -->
         <div class="step">
 
             <h2>Deployment Category</h2>
@@ -52,12 +52,15 @@
 
             <select id="deploymentType">
                 <option value="">Choose</option>
+
                 <option value="application">
                     Application Deployment
                 </option>
+
                 <option value="infrastructure">
                     Infrastructure Deployment
                 </option>
+
             </select>
 
             <div class="btn-group">
@@ -74,37 +77,46 @@
 
         </div>
 
-        <!-- Step 3 -->
+        <!-- STEP 3 -->
         <div class="step">
 
             <h2>Configuration</h2>
 
             <div id="dynamicFields"></div>
 
-            <h3 id="outputTitle">Generated Output</h3>
+            <div class="output-header">
 
+    <h3 id="outputTitle">
+        Generated Output
+    </h3>
+
+    <div class="toolbar">
+
+        <button
+            type="button"
+            id="copyBtn"
+            title="Copy Output">
+            📋
+        </button>
+
+        <button
+            type="button"
+            id="downloadBtn"
+            title="Download Output">
+            ⬇
+        </button>
+
+    </div>
+
+</div>
+
+            <!-- Output Area -->
             <textarea
                 id="terraformOutput"
-                rows="12"
+                rows="14"
                 readonly
                 style="width:100%;margin-top:10px;"
             ></textarea>
-
-            <div class="action-buttons">
-
-                <button
-                    type="button"
-                    id="copyBtn">
-                    Copy Output
-                </button>
-
-                <button
-                    type="button"
-                    id="downloadBtn">
-                    Download Output
-                </button>
-
-            </div>
 
             <div class="btn-group">
 

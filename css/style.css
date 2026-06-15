@@ -5,13 +5,13 @@
 }
 
 body{
-    font-family:Arial,sans-serif;
+    font-family:Arial, sans-serif;
     background:#f4f6f9;
 }
 
 .container{
     width:90%;
-    max-width:700px;
+    max-width:1200px;
     margin:50px auto;
     background:white;
     padding:30px;
@@ -55,22 +55,30 @@ p{
 label{
     display:block;
     margin-top:15px;
+    font-weight:500;
 }
 
 input,
 select{
     width:100%;
-    padding:10px;
+    padding:12px;
     margin-top:5px;
+    border:1px solid #ccc;
+    border-radius:6px;
 }
 
 button{
-    padding:10px 20px;
+    padding:12px 24px;
     border:none;
     background:#0078d4;
     color:white;
     cursor:pointer;
-    border-radius:5px;
+    border-radius:8px;
+    transition:0.2s;
+}
+
+button:hover{
+    opacity:0.9;
 }
 
 .btn-group{
@@ -82,6 +90,7 @@ button{
 .nextBtn{
     margin-top:20px;
 }
+
 .checkbox-group{
     margin-top:15px;
 }
@@ -90,13 +99,89 @@ button{
     display:block;
     margin:10px 0;
 }
-.action-buttons{
+
+/* Output Header */
+
+.output-header{
     display:flex;
-    gap:10px;
-    margin-top:10px;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:20px;
+    margin-bottom:10px;
 }
 
-#copyBtn,
-#downloadBtn{
-    flex:1;
+.output-header h3{
+    margin:0;
+}
+
+/* Toolbar */
+
+.toolbar{
+    display:flex;
+    gap:10px;
+}
+
+.toolbar button{
+    width:55px !important;
+    height:55px !important;
+    min-width:55px;
+
+    padding:0 !important;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:none;
+    border-radius:12px;
+
+    font-size:24px;
+    background:#0078d4;
+    color:white;
+    cursor:pointer;
+
+    transition:0.2s;
+}
+
+.toolbar button:hover{
+    transform:scale(1.05);
+}
+
+/* Output Area */
+
+#terraformOutput{
+    width:100%;
+    min-height:400px;
+
+    padding:15px;
+
+    font-family:Consolas, monospace;
+    font-size:15px;
+    line-height:1.5;
+
+    border:1px solid #ccc;
+    border-radius:8px;
+
+    resize:vertical;
+}
+
+/* Mobile Responsive */
+
+@media(max-width:768px){
+
+    .container{
+        width:95%;
+        padding:20px;
+    }
+
+    .btn-group{
+        flex-direction:column;
+        gap:10px;
+    }
+
+    .output-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+    }
 }
