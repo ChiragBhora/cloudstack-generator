@@ -5,6 +5,9 @@ const progressBar = document.getElementById("progressBar");
 
 let currentStep = 0;
 
+// ------------------------
+// Step Navigation
+// ------------------------
 function updateForm() {
     steps.forEach((step, index) => {
         step.classList.toggle("active", index === currentStep);
@@ -32,37 +35,17 @@ prevBtns.forEach(btn => {
     });
 });
 
-document
-.getElementById("multiStepForm")
-.addEventListener("submit", e => {
-
-    e.preventDefault();
-
-    const data = {
-        projectName: document.getElementById("projectName")?.value || "",
-        repoName: document.getElementById("repoName")?.value || "",
-        deploymentType: document.getElementById("deploymentType")?.value || "",
-        vmName: document.getElementById("vmName")?.value || "",
-        vmSize: document.getElementById("vmSize")?.value || "",
-        adminUser: document.getElementById("adminUser")?.value || ""
-    };
-
-    const terraformCode = generateTerraform(data);
-
-document.getElementById("terraformOutput").value =
-terraformCode;
-});
-
 updateForm();
 
+// ------------------------
+// Dynamic Fields
+// ------------------------
 const deploymentType = document.getElementById("deploymentType");
 const dynamicFields = document.getElementById("dynamicFields");
 
 deploymentType.addEventListener("change", () => {
 
-    const value = deploymentType.value;
-
-    if (value === "application") {
+    if (deploymentType.value === "application") {
 
         dynamicFields.innerHTML = `
             <label>Frontend Type</label>
@@ -89,16 +72,16 @@ deploymentType.addEventListener("change", () => {
         `;
     }
 
-    else if (value === "infrastructure") {
+    else if (deploymentType.value === "infrastructure") {
 
         dynamicFields.innerHTML = `
             <label>IaC Tool</label>
-            <select id="iac">
+            <select>
                 <option>Terraform</option>
             </select>
 
             <label>Cloud Provider</label>
-            <select id="cloud">
+            <select>
                 <option>Azure</option>
             </select>
 
@@ -107,18 +90,8 @@ deploymentType.addEventListener("change", () => {
             <div class="checkbox-group">
 
                 <label>
-                    <input type="checkbox" id="rgCheck">
-                    Resource Group
-                </label>
-
-                <label>
                     <input type="checkbox" id="vmCheck">
                     Virtual Machine
-                </label>
-
-                <label>
-                    <input type="checkbox" id="storageCheck">
-                    Storage Account
                 </label>
 
             </div>
@@ -128,13 +101,12 @@ deploymentType.addEventListener("change", () => {
     }
 });
 
+// ------------------------
+// VM Configuration
+// ------------------------
 document.addEventListener("change", (event) => {
 
-    if (
-        event.target.id !== "rgCheck" &&
-        event.target.id !== "vmCheck" &&
-        event.target.id !== "storageCheck"
-    ) {
+    if (event.target.id !== "vmCheck") {
         return;
     }
 
@@ -142,32 +114,9 @@ document.addEventListener("change", (event) => {
 
     if (!configDiv) return;
 
-    let html = "";
+    if (event.target.checked) {
 
-    const rgCheck = document.getElementById("rgCheck");
-    const vmCheck = document.getElementById("vmCheck");
-    const storageCheck = document.getElementById("storageCheck");
-
-    if (rgCheck && rgCheck.checked) {
-
-        html += `
-            <h3>Resource Group</h3>
-
-            <label>Resource Group Name</label>
-            <input type="text" id="rgName">
-
-            <label>Location</label>
-            <select id="location">
-                <option>Central India</option>
-                <option>East US</option>
-                <option>West Europe</option>
-            </select>
-        `;
-    }
-
-    if (vmCheck && vmCheck.checked) {
-
-        html += `
+        configDiv.innerHTML = `
             <h3>Virtual Machine</h3>
 
             <label>VM Name</label>
@@ -184,29 +133,27 @@ document.addEventListener("change", (event) => {
             <input type="text" id="adminUser">
         `;
     }
-
-    if (storageCheck && storageCheck.checked) {
-
-        html += `
-            <h3>Storage Account</h3>
-
-            <label>Storage Name</label>
-            <input type="text" id="storageName">
-
-            <label>Replication</label>
-            <select id="replication">
-                <option>LRS</option>
-                <option>GRS</option>
-                <option>ZRS</option>
-            </select>
-        `;
+    else {
+        configDiv.innerHTML = "";
     }
-
-    configDiv.innerHTML = html;
 });
-function generateTerraform(data) {
 
-    return `
+// ------------------------
+// Generate Terraform
+// ------------------------
+document.getElementById("multiStepForm")
+.addEventListener("submit", (e) => {
+
+    e.preventDefault();
+
+    const data = {
+        projectName: document.getElementById("projectName")?.value || "",
+        vmName: document.getElementById("vmName")?.value || "",
+        vmSize: document.getElementById("vmSize")?.value || "",
+        adminUser: document.getElementById("adminUser")?.value || ""
+    };
+
+    const terraformCode = `
 resource "azurerm_resource_group" "rg" {
   name     = "${data.projectName}-rg"
   location = "Central India"
@@ -218,5 +165,12 @@ resource "azurerm_linux_virtual_machine" "vm" {
   admin_username = "${data.adminUser}"
 }
 `;
-}
-console.log(document.getElementById("terraformOutput"));
+
+    const output = document.getElementById("terraformOutput");
+
+    if (output) {
+        output.value = terraformCode;
+    }
+
+    console.log(terraformCode);
+});
