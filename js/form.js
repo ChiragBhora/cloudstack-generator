@@ -68,7 +68,7 @@ document.getElementById("deploymentType");
 const dynamicFields =
 document.getElementById("dynamicFields");
 
-deploymentType.addEventListener("change", () => {
+deploymentType.addEventListener("click", () => {
 
     const value = deploymentType.value;
 
