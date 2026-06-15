@@ -47,30 +47,48 @@ deploymentType.addEventListener("change", () => {
 
     if (deploymentType.value === "application") {
 
-        dynamicFields.innerHTML = `
-            <label>Frontend Type</label>
-            <select id="frontend">
-                <option>React</option>
-                <option>Angular</option>
-                <option>Vue</option>
-                <option>HTML/CSS/JS</option>
-            </select>
+    dynamicFields.innerHTML = `
+        <label>Frontend Type</label>
+        <select id="frontend">
+            <option>React</option>
+            <option>Angular</option>
+            <option>Vue</option>
+            <option>HTML/CSS/JS</option>
+        </select>
 
-            <label>Backend Type</label>
-            <select id="backend">
-                <option>NodeJS</option>
-                <option>Python</option>
-                <option>Java</option>
-                <option>.NET</option>
-            </select>
+        <label>Backend Type</label>
+        <select id="backend">
+            <option>NodeJS</option>
+            <option>Python</option>
+            <option>Java</option>
+            <option>.NET</option>
+        </select>
 
-            <label>Deployment Target</label>
-            <select id="target">
-                <option>Azure App Service</option>
-                <option>Azure VM</option>
-            </select>
-        `;
-    }
+        <label>Deployment Target</label>
+        <select id="target">
+            <option>Azure App Service</option>
+            <option>Azure VM</option>
+        </select>
+
+        <label>Azure Service Connection</label>
+        <input
+            type="text"
+            id="serviceConnection"
+            placeholder="My-ServiceConnection">
+
+        <label>App Service Name</label>
+        <input
+            type="text"
+            id="appName"
+            placeholder="my-web-app">
+
+        <label>Resource Group Name</label>
+        <input
+            type="text"
+            id="resourceGroup"
+            placeholder="rg-dev">
+    `;
+}
 
     else if (deploymentType.value === "infrastructure") {
 
@@ -156,10 +174,16 @@ document.getElementById("multiStepForm")
         const backend =
             document.getElementById("backend")?.value || "";
 
-        const target =
-            document.getElementById("target")?.value || "";
+        const serviceConnection =
+             document.getElementById("serviceConnection")?.value || "";
 
-        outputTitle.textContent =
+        const appName =
+            document.getElementById("appName")?.value || "";
+
+        const resourceGroup =
+            document.getElementById("resourceGroup")?.value || "";
+
+            outputTitle.textContent =
             "Generated Azure DevOps YAML";
 
         let yamlCode = "";
@@ -169,7 +193,11 @@ document.getElementById("multiStepForm")
             backend === "NodeJS" &&
             target === "Azure App Service"
         ) {
-            yamlCode = generateReactNodeAppServiceYAML();
+           yamlCode = generateReactNodeAppServiceYAML(
+                serviceConnection,
+                appName,
+                resourceGroup
+);
         }
         else if (
             frontend === "React" &&
@@ -181,9 +209,9 @@ document.getElementById("multiStepForm")
         else {
             yamlCode = `# Template not available yet
 
-Frontend: ${frontend}
-Backend: ${backend}
-Target: ${target}`;
+        Frontend: ${frontend}
+        Backend: ${backend}
+        Target: ${target}`;
         }
 
         output.value = yamlCode;
@@ -209,22 +237,26 @@ Target: ${target}`;
             "Generated Terraform";
 
         const terraformCode = `
-resource "azurerm_resource_group" "rg" {
-  name     = "${data.projectName}-rg"
-  location = "Central India"
-}
+            resource "azurerm_resource_group" "rg" {
+            name     = "${data.projectName}-rg"
+            location = "Central India"
+            }
 
-resource "azurerm_linux_virtual_machine" "vm" {
-  name           = "${data.vmName}"
-  size           = "${data.vmSize}"
-  admin_username = "${data.adminUser}"
-}
-`;
+            resource "azurerm_linux_virtual_machine" "vm" {
+            name           = "${data.vmName}"
+            size           = "${data.vmSize}"
+            admin_username = "${data.adminUser}"
+            }
+`;  
 
         output.value = terraformCode;
     }
 });
-function generateReactNodeAppServiceYAML() {
+function generateReactNodeAppServiceYAML(
+    serviceConnection,
+    appName,
+    resourceGroup
+) {
     return `
 trigger:
 - main
