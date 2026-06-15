@@ -139,21 +139,84 @@ document.addEventListener("change", (event) => {
 });
 
 // ------------------------
-// Generate Terraform
+// Generate Output
 // ------------------------
 document.getElementById("multiStepForm")
 .addEventListener("submit", (e) => {
 
     e.preventDefault();
 
-    const data = {
-        projectName: document.getElementById("projectName")?.value || "",
-        vmName: document.getElementById("vmName")?.value || "",
-        vmSize: document.getElementById("vmSize")?.value || "",
-        adminUser: document.getElementById("adminUser")?.value || ""
-    };
+    const output = document.getElementById("terraformOutput");
+    const outputTitle = document.getElementById("outputTitle");
 
-    const terraformCode = `
+    // APPLICATION DEPLOYMENT
+    if (deploymentType.value === "application") {
+
+        const frontend =
+            document.getElementById("frontend")?.value || "";
+
+        const backend =
+            document.getElementById("backend")?.value || "";
+
+        const target =
+            document.getElementById("target")?.value || "";
+
+        outputTitle.textContent =
+            "Generated Azure DevOps YAML";
+
+        const yamlCode = `
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+
+- script: npm install
+  displayName: Install Dependencies
+
+- script: npm run build
+  displayName: Build Application
+
+- script: echo "Frontend = ${frontend}"
+  displayName: Frontend
+
+- script: echo "Backend = ${backend}"
+  displayName: Backend
+
+- script: echo "Deploying to ${target}"
+  displayName: Deployment Target
+`;
+
+        output.value = yamlCode;
+    }
+
+    // INFRASTRUCTURE DEPLOYMENT
+    else if (deploymentType.value === "infrastructure") {
+
+        const data = {
+            projectName:
+                document.getElementById("projectName")?.value || "",
+
+            vmName:
+                document.getElementById("vmName")?.value || "",
+
+            vmSize:
+                document.getElementById("vmSize")?.value || "",
+
+            adminUser:
+                document.getElementById("adminUser")?.value || ""
+        };
+
+        outputTitle.textContent =
+            "Generated Terraform";
+
+        const terraformCode = `
 resource "azurerm_resource_group" "rg" {
   name     = "${data.projectName}-rg"
   location = "Central India"
@@ -166,11 +229,6 @@ resource "azurerm_linux_virtual_machine" "vm" {
 }
 `;
 
-    const output = document.getElementById("terraformOutput");
-
-    if (output) {
         output.value = terraformCode;
     }
-
-    console.log(terraformCode);
 });
