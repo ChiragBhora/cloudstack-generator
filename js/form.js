@@ -68,7 +68,14 @@ document.getElementById("deploymentType");
 const dynamicFields =
 document.getElementById("dynamicFields");
 
-deploymentType.addEventListener("click", () => {
+deploymentType.addEventListener("change", () => {
+    if (
+    event.target.id !== "rgCheck" &&
+    event.target.id !== "vmCheck" &&
+    event.target.id !== "storageCheck"
+) {
+    return;
+}
 
     const value = deploymentType.value;
 
