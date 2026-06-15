@@ -72,27 +72,41 @@
 
         </div>
 
+    
         <!-- Step 3 -->
-        <h3 id="outputTitle">Generated Output</h3>
+<div class="step">
 
-<textarea
-    id="terraformOutput"
-    rows="12"
-    readonly
-></textarea>
+    <h2>Configuration</h2>
 
-<button type="button" id="downloadBtn">
-    Download Output
-</button>
+    <div id="dynamicFields"></div>
 
-<div class="btn-group">
-    <button type="button" class="prevBtn">
-        Previous
+    <h3 id="outputTitle">Generated Output</h3>
+
+    <textarea
+        id="terraformOutput"
+        rows="12"
+        readonly
+        style="width:100%;margin-top:10px;"
+    ></textarea>
+
+    <button
+        type="button"
+        id="downloadBtn">
+        Download Output
     </button>
 
-    <button type="submit">
-        Generate Output
-    </button>
+    <div class="btn-group">
+
+        <button type="button" class="prevBtn">
+            Previous
+        </button>
+
+        <button type="submit">
+            Generate Output
+        </button>
+
+    </div>
+
 </div>
     </form>
 
