@@ -61,6 +61,7 @@
             </select>
 
             <div class="btn-group">
+
                 <button type="button" class="prevBtn">
                     Previous
                 </button>
@@ -68,46 +69,60 @@
                 <button type="button" class="nextBtn">
                     Next
                 </button>
+
             </div>
 
         </div>
 
-    
         <!-- Step 3 -->
-<div class="step">
+        <div class="step">
 
-    <h2>Configuration</h2>
+            <h2>Configuration</h2>
 
-    <div id="dynamicFields"></div>
+            <div id="dynamicFields"></div>
 
-    <h3 id="outputTitle">Generated Output</h3>
+            <h3 id="outputTitle">Generated Output</h3>
 
-    <textarea
-        id="terraformOutput"
-        rows="12"
-        readonly
-        style="width:100%;margin-top:10px;"
-    ></textarea>
+            <textarea
+                id="terraformOutput"
+                rows="12"
+                readonly
+                style="width:100%;margin-top:10px;"
+            ></textarea>
 
-    <button
-        type="button"
-        id="downloadBtn">
-        Download Output
-    </button>
+            <div class="action-buttons">
 
-    <div class="btn-group">
+                <button
+                    type="button"
+                    id="copyBtn">
+                    Copy Output
+                </button>
 
-        <button type="button" class="prevBtn">
-            Previous
-        </button>
+                <button
+                    type="button"
+                    id="downloadBtn">
+                    Download Output
+                </button>
 
-        <button type="submit">
-            Generate Output
-        </button>
+            </div>
 
-    </div>
+            <div class="btn-group">
 
-</div>
+                <button
+                    type="button"
+                    class="prevBtn">
+                    Previous
+                </button>
+
+                <button
+                    type="submit">
+                    Generate Output
+                </button>
+
+            </div>
+
+        </div>
+
     </form>
 
 </div>
