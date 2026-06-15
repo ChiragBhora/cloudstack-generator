@@ -163,38 +163,37 @@ document.getElementById("multiStepForm")
 
         outputTitle.textContent =
             "Generated Azure DevOps YAML";
+            let yamlCode = "";
 
-        const yamlCode = `
-trigger:
-- main
+if (
+    frontend === "React" &&
+    backend === "NodeJS" &&
+    target === "Azure App Service"
+) {
+    yamlCode = generateReactNodeAppServiceYAML();
+}
 
-pool:
-  vmImage: ubuntu-latest
+else if (
+    frontend === "React" &&
+    backend === "NodeJS" &&
+    target === "Azure VM"
+) {
+    yamlCode = generateReactNodeVMYAML();
+}
 
-steps:
+else {
+    yamlCode =
+`# Template not available yet
 
-- task: NodeTool@0
-  inputs:
-    versionSpec: '18.x'
-
-- script: npm install
-  displayName: Install Dependencies
-
-- script: npm run build
-  displayName: Build Application
-
-- script: echo "Frontend = ${frontend}"
-  displayName: Frontend
-
-- script: echo "Backend = ${backend}"
-  displayName: Backend
-
-- script: echo "Deploying to ${target}"
-  displayName: Deployment Target
-`;
-
-        output.value = yamlCode;
+Frontend: ${frontend}
+Backend: ${backend}
+Target: ${target}`;
+}
+;
+output.value = yamlCode;
     }
+});
+        
 
     // INFRASTRUCTURE DEPLOYMENT
     else if (deploymentType.value === "infrastructure") {
@@ -232,3 +231,57 @@ resource "azurerm_linux_virtual_machine" "vm" {
         output.value = terraformCode;
     }
 });
+function generateReactNodeAppServiceYAML() {
+    return `
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+
+- script: npm install
+  displayName: Install Dependencies
+
+- script: npm run build
+  displayName: Build React Application
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.SourcesDirectory)'
+    archiveType: zip
+
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'service-connection'
+    appName: 'my-web-app'
+`;
+}
+
+function generateReactNodeVMYAML() {
+    return `
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+
+- script: npm install
+
+- script: npm run build
+
+- task: CopyFilesOverSSH@0
+  displayName: Deploy to VM
+`;
+}
