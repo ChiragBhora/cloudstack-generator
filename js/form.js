@@ -1,43 +1,34 @@
 const steps = document.querySelectorAll(".step");
-
 const nextBtns = document.querySelectorAll(".nextBtn");
 const prevBtns = document.querySelectorAll(".prevBtn");
-
 const progressBar = document.getElementById("progressBar");
 
 let currentStep = 0;
 
 function updateForm() {
-
     steps.forEach((step, index) => {
         step.classList.toggle("active", index === currentStep);
     });
 
-    const progress =
-        ((currentStep + 1) / steps.length) * 100;
-
+    const progress = ((currentStep + 1) / steps.length) * 100;
     progressBar.style.width = progress + "%";
 }
 
 nextBtns.forEach(btn => {
     btn.addEventListener("click", () => {
-
-        if(currentStep < steps.length - 1){
+        if (currentStep < steps.length - 1) {
             currentStep++;
             updateForm();
         }
-
     });
 });
 
 prevBtns.forEach(btn => {
     btn.addEventListener("click", () => {
-
-        if(currentStep > 0){
+        if (currentStep > 0) {
             currentStep--;
             updateForm();
         }
-
     });
 });
 
@@ -48,9 +39,9 @@ document
     e.preventDefault();
 
     const data = {
-        projectName: document.getElementById("projectName")?.value,
-        repoName: document.getElementById("repoName")?.value,
-        deploymentType: document.getElementById("deploymentType")?.value,
+        projectName: document.getElementById("projectName")?.value || "",
+        repoName: document.getElementById("repoName")?.value || "",
+        deploymentType: document.getElementById("deploymentType")?.value || "",
         vmName: document.getElementById("vmName")?.value || "",
         vmSize: document.getElementById("vmSize")?.value || "",
         adminUser: document.getElementById("adminUser")?.value || ""
@@ -60,26 +51,17 @@ document
 
     alert("Configuration Saved Successfully!");
 });
+
 updateForm();
 
-const deploymentType =
-document.getElementById("deploymentType");
-
-const dynamicFields =
-document.getElementById("dynamicFields");
+const deploymentType = document.getElementById("deploymentType");
+const dynamicFields = document.getElementById("dynamicFields");
 
 deploymentType.addEventListener("change", () => {
-    if (
-    event.target.id !== "rgCheck" &&
-    event.target.id !== "vmCheck" &&
-    event.target.id !== "storageCheck"
-) {
-    return;
-}
 
     const value = deploymentType.value;
 
-    if(value === "application"){
+    if (value === "application") {
 
         dynamicFields.innerHTML = `
             <label>Frontend Type</label>
@@ -106,64 +88,66 @@ deploymentType.addEventListener("change", () => {
         `;
     }
 
-    else if(value === "infrastructure"){
+    else if (value === "infrastructure") {
 
-    dynamicFields.innerHTML = `
-        <label>IaC Tool</label>
-        <select id="iac">
-            <option>Terraform</option>
-        </select>
+        dynamicFields.innerHTML = `
+            <label>IaC Tool</label>
+            <select id="iac">
+                <option>Terraform</option>
+            </select>
 
-        <label>Cloud Provider</label>
-        <select id="cloud">
-            <option>Azure</option>
-        </select>
+            <label>Cloud Provider</label>
+            <select id="cloud">
+                <option>Azure</option>
+            </select>
 
-        <label>Resources</label>
+            <label>Resources</label>
 
-        <div class="checkbox-group">
+            <div class="checkbox-group">
 
-            <label>
-                <input type="checkbox" id="rgCheck">
-                Resource Group
-            </label>
+                <label>
+                    <input type="checkbox" id="rgCheck">
+                    Resource Group
+                </label>
 
-            <label>
-                <input type="checkbox" id="vmCheck">
-                Virtual Machine
-            </label>
+                <label>
+                    <input type="checkbox" id="vmCheck">
+                    Virtual Machine
+                </label>
 
-            <label>
-                <input type="checkbox" id="storageCheck">
-                Storage Account
-            </label>
+                <label>
+                    <input type="checkbox" id="storageCheck">
+                    Storage Account
+                </label>
 
-        </div>
+            </div>
 
-        <div id="resourceConfig"></div>
+            <div id="resourceConfig"></div>
         `;
     }
-
 });
+
 document.addEventListener("change", (event) => {
 
-    const configDiv =
-    document.getElementById("resourceConfig");
+    if (
+        event.target.id !== "rgCheck" &&
+        event.target.id !== "vmCheck" &&
+        event.target.id !== "storageCheck"
+    ) {
+        return;
+    }
 
-    if(!configDiv) return;
+    const configDiv = document.getElementById("resourceConfig");
+
+    if (!configDiv) return;
 
     let html = "";
 
-    const rgCheck =
-    document.getElementById("rgCheck");
+    const rgCheck = document.getElementById("rgCheck");
+    const vmCheck = document.getElementById("vmCheck");
+    const storageCheck = document.getElementById("storageCheck");
 
-    const vmCheck =
-    document.getElementById("vmCheck");
-
-    const storageCheck =
-    document.getElementById("storageCheck");
-
-    if(rgCheck && rgCheck.checked){
+    if (rgCheck && rgCheck.checked) {
 
         html += `
             <h3>Resource Group</h3>
@@ -180,7 +164,7 @@ document.addEventListener("change", (event) => {
         `;
     }
 
-    if(vmCheck && vmCheck.checked){
+    if (vmCheck && vmCheck.checked) {
 
         html += `
             <h3>Virtual Machine</h3>
@@ -200,7 +184,7 @@ document.addEventListener("change", (event) => {
         `;
     }
 
-    if(storageCheck && storageCheck.checked){
+    if (storageCheck && storageCheck.checked) {
 
         html += `
             <h3>Storage Account</h3>
@@ -218,5 +202,4 @@ document.addEventListener("change", (event) => {
     }
 
     configDiv.innerHTML = html;
-
 });
