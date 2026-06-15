@@ -47,9 +47,10 @@ document
         adminUser: document.getElementById("adminUser")?.value || ""
     };
 
-    console.log(data);
+    const terraformCode = generateTerraform(data);
 
-    alert("Configuration Saved Successfully!");
+document.getElementById("terraformOutput").value =
+terraformCode;
 });
 
 updateForm();
@@ -203,3 +204,18 @@ document.addEventListener("change", (event) => {
 
     configDiv.innerHTML = html;
 });
+function generateTerraform(data) {
+
+    return `
+resource "azurerm_resource_group" "rg" {
+  name     = "${data.projectName}-rg"
+  location = "Central India"
+}
+
+resource "azurerm_linux_virtual_machine" "vm" {
+  name           = "${data.vmName}"
+  size           = "${data.vmSize}"
+  admin_username = "${data.adminUser}"
+}
+`;
+}
