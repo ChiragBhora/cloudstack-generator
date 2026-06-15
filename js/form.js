@@ -137,7 +137,6 @@ document.addEventListener("change", (event) => {
         configDiv.innerHTML = "";
     }
 });
-
 // ------------------------
 // Generate Output
 // ------------------------
@@ -149,7 +148,6 @@ document.getElementById("multiStepForm")
     const output = document.getElementById("terraformOutput");
     const outputTitle = document.getElementById("outputTitle");
 
-    // APPLICATION DEPLOYMENT
     if (deploymentType.value === "application") {
 
         const frontend =
@@ -163,39 +161,34 @@ document.getElementById("multiStepForm")
 
         outputTitle.textContent =
             "Generated Azure DevOps YAML";
-            let yamlCode = "";
 
-if (
-    frontend === "React" &&
-    backend === "NodeJS" &&
-    target === "Azure App Service"
-) {
-    yamlCode = generateReactNodeAppServiceYAML();
-}
+        let yamlCode = "";
 
-else if (
-    frontend === "React" &&
-    backend === "NodeJS" &&
-    target === "Azure VM"
-) {
-    yamlCode = generateReactNodeVMYAML();
-}
-
-else {
-    yamlCode =
-`# Template not available yet
+        if (
+            frontend === "React" &&
+            backend === "NodeJS" &&
+            target === "Azure App Service"
+        ) {
+            yamlCode = generateReactNodeAppServiceYAML();
+        }
+        else if (
+            frontend === "React" &&
+            backend === "NodeJS" &&
+            target === "Azure VM"
+        ) {
+            yamlCode = generateReactNodeVMYAML();
+        }
+        else {
+            yamlCode = `# Template not available yet
 
 Frontend: ${frontend}
 Backend: ${backend}
 Target: ${target}`;
-}
-;
-output.value = yamlCode;
-    }
-});
-        
+        }
 
-    // INFRASTRUCTURE DEPLOYMENT
+        output.value = yamlCode;
+    }
+
     else if (deploymentType.value === "infrastructure") {
 
         const data = {
