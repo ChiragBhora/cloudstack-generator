@@ -21,6 +21,7 @@
 
         <!-- Step 1 -->
         <div class="step active">
+
             <h2>Project Details</h2>
 
             <label>Project Name</label>
@@ -36,43 +37,71 @@
                 <option>GitLab</option>
             </select>
 
-            <button type="button" class="nextBtn">Next</button>
+            <button type="button" class="nextBtn">
+                Next
+            </button>
+
         </div>
 
         <!-- Step 2 -->
         <div class="step">
+
             <h2>Deployment Category</h2>
 
             <label>Select Type</label>
+
             <select id="deploymentType">
                 <option value="">Choose</option>
-                <option value="application">Application Deployment</option>
-                <option value="infrastructure">Infrastructure Deployment</option>
+                <option value="application">
+                    Application Deployment
+                </option>
+                <option value="infrastructure">
+                    Infrastructure Deployment
+                </option>
             </select>
 
             <div class="btn-group">
-                <button type="button" class="prevBtn">Previous</button>
-                <button type="button" class="nextBtn">Next</button>
+                <button type="button" class="prevBtn">
+                    Previous
+                </button>
+
+                <button type="button" class="nextBtn">
+                    Next
+                </button>
             </div>
+
         </div>
+
         <!-- Step 3 -->
-<div class="step">
+        <div class="step">
 
-    <h2>Configuration</h2>
+            <h2>Configuration</h2>
 
-    <div id="dynamicFields"></div>
+            <div id="dynamicFields"></div>
 
-    <div class="btn-group">
-        <button type="button" class="prevBtn">
-            Previous
-        </button>
+            <h3>Generated Terraform</h3>
 
-        <button type="submit">
-            Finish
-        </button>
-    </div>
+            <textarea
+                id="terraformOutput"
+                rows="12"
+                readonly
+                style="width:100%;margin-top:10px;"
+            ></textarea>
 
-</div>
+            <div class="btn-group">
+
+                <button type="button" class="prevBtn">
+                    Previous
+                </button>
+
+                <button type="submit">
+                    Generate Terraform
+                </button>
+
+            </div>
+
+        </div>
+
     </form>
 
 </div>
