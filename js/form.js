@@ -219,3 +219,4 @@ resource "azurerm_linux_virtual_machine" "vm" {
 }
 `;
 }
+console.log(document.getElementById("terraformOutput"));
