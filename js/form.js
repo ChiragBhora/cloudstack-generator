@@ -47,9 +47,19 @@ document
 
     e.preventDefault();
 
-    alert("Sprint 1 Complete!");
-});
+    const data = {
+        projectName: document.getElementById("projectName")?.value,
+        repoName: document.getElementById("repoName")?.value,
+        deploymentType: document.getElementById("deploymentType")?.value,
+        vmName: document.getElementById("vmName")?.value || "",
+        vmSize: document.getElementById("vmSize")?.value || "",
+        adminUser: document.getElementById("adminUser")?.value || ""
+    };
 
+    console.log(data);
+
+    alert("Configuration Saved Successfully!");
+});
 updateForm();
 
 const deploymentType =
