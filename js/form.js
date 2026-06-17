@@ -189,139 +189,29 @@ document.getElementById("multiStepForm")
             "Generated Azure DevOps YAML";
 
         let yamlCode = "";
-
-        if (
-    frontend === "React" &&
-    backend === "NodeJS" &&
-    target === "Azure App Service"
-) {
-    yamlCode = generateReactNodeAppServiceYAML(
-        serviceConnection,
-        appName,
-        resourceGroup
-    );
-}
-else if (
-    frontend === "React" &&
-    backend === "NodeJS" &&
-    target === "Azure VM"
-) {
-    yamlCode = generateReactNodeVMYAML();
-}
-else if (
-    frontend === "Angular" &&
-    backend === ".NET" &&
-    target === "Azure App Service"
-) {
-    yamlCode = generateAngularDotNetYAML();
-}
-
-else if (
-    frontend === "HTML/CSS/JS" &&
-    target === "Azure App Service"
-) {
-    yamlCode = generateStaticWebsiteYAML();
-}
-
-else if (
-    backend === "Python" &&
-    target === "Azure VM"
-) {
-    yamlCode = generatePythonVMYAML();
-}
-
-else {
-    yamlCode = `# Template not available yet
-
-Frontend: ${frontend}
-Backend: ${backend}
-Target: ${target}`;
-}
-
-        output.value = yamlCode;
-    }
-
-    else if (deploymentType.value === "infrastructure") {
-
-        const data = {
-            projectName:
-                document.getElementById("projectName")?.value || "",
-
-            vmName:
-                document.getElementById("vmName")?.value || "",
-
-            vmSize:
-                document.getElementById("vmSize")?.value || "",
-
-            adminUser:
-                document.getElementById("adminUser")?.value || ""
-        };
-
-        outputTitle.textContent =
-            "Generated Terraform";
-
-        const terraformCode = `
-            resource "azurerm_resource_group" "rg" {
-            name     = "${data.projectName}-rg"
-            location = "Central India"
-            }
-
-            resource "azurerm_linux_virtual_machine" "vm" {
-            name           = "${data.vmName}"
-            size           = "${data.vmSize}"
-            admin_username = "${data.adminUser}"
-            }
-`;  
-
-        output.value = terraformCode;
-    }
-});
-function generateReactNodeAppServiceYAML(
+            yamlCode = generateDynamicYAML(
+            frontend,
+            backend,
+            target,
+            serviceConnection,
+            appName,
+            resourceGroup
+);
+function generateDynamicYAML(
+    frontend,
+    backend,
+    target,
     serviceConnection,
     appName,
     resourceGroup
 ) {
-    return `
-trigger:
-- main
 
-pool:
-  vmImage: ubuntu-latest
+    let buildSteps = "";
 
-steps:
+    // Backend Build Logic
+    if (backend === "NodeJS") {
 
-- task: NodeTool@0
-  inputs:
-    versionSpec: '18.x'
-
-- script: npm install
-  displayName: Install Dependencies
-
-- script: npm run build
-  displayName: Build React Application
-
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(Build.SourcesDirectory)'
-    archiveType: zip
-
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'service-connection'
-    appName: 'my-web-app'
-`;
-}
-
-function generateReactNodeVMYAML() {
-    return `
-trigger:
-- main
-
-pool:
-  vmImage: ubuntu-latest
-
-steps:
-
+        buildSteps = `
 - task: NodeTool@0
   inputs:
     versionSpec: '18.x'
@@ -329,21 +219,30 @@ steps:
 - script: npm install
 
 - script: npm run build
-
-- task: CopyFilesOverSSH@0
-  displayName: Deploy to VM
 `;
-}
-function generateAngularDotNetYAML() {
-    return `
-trigger:
-- main
+    }
 
-pool:
-  vmImage: ubuntu-latest
+    else if (backend === "Python") {
 
-steps:
+        buildSteps = `
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.11'
 
+- script: pip install -r requirements.txt
+`;
+    }
+
+    else if (backend === "Java") {
+
+        buildSteps = `
+- task: Maven@3
+`;
+    }
+
+    else if (backend === ".NET") {
+
+        buildSteps = `
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
@@ -352,44 +251,43 @@ steps:
 - script: dotnet restore
 
 - script: dotnet build
-
-- task: AzureWebApp@1
 `;
-}
+    }
 
-function generateStaticWebsiteYAML() {
-    return `
-trigger:
-- main
+    let deployStep = "";
 
-pool:
-  vmImage: ubuntu-latest
+    // Deployment Logic
+    if (target === "Azure App Service") {
 
-steps:
-
-- task: ArchiveFiles@2
-
+        deployStep = `
 - task: AzureWebApp@1
-`;
-}
-
-function generatePythonVMYAML() {
-    return `
-trigger:
-- main
-
-pool:
-  vmImage: ubuntu-latest
-
-steps:
-
-- task: UsePythonVersion@0
   inputs:
-    versionSpec: '3.11'
+    azureSubscription: '${serviceConnection}'
+    appName: '${appName}'
+    resourceGroupName: '${resourceGroup}'
+`;
+    }
 
-- script: pip install -r requirements.txt
+    else {
 
+        deployStep = `
 - task: CopyFilesOverSSH@0
+  displayName: Deploy To Azure VM
+`;
+    }
+
+    return `
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+${buildSteps}
+
+${deployStep}
 `;
 }
 document
