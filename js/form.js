@@ -173,11 +173,12 @@ document.getElementById("multiStepForm")
 
         const backend =
             document.getElementById("backend")?.value || "";
+
         const target =
             document.getElementById("target")?.value || "";
 
         const serviceConnection =
-             document.getElementById("serviceConnection")?.value || "";
+            document.getElementById("serviceConnection")?.value || "";
 
         const appName =
             document.getElementById("appName")?.value || "";
@@ -185,18 +186,41 @@ document.getElementById("multiStepForm")
         const resourceGroup =
             document.getElementById("resourceGroup")?.value || "";
 
-            outputTitle.textContent =
+        outputTitle.textContent =
             "Generated Azure DevOps YAML";
 
-        let yamlCode = "";
-            yamlCode = generateDynamicYAML(
+        const yamlCode = generateDynamicYAML(
             frontend,
             backend,
             target,
             serviceConnection,
             appName,
             resourceGroup
-);
+        );
+
+        output.value = yamlCode;
+    }
+
+    else if (deploymentType.value === "infrastructure") {
+
+        outputTitle.textContent =
+            "Generated Terraform";
+
+        output.value = `
+resource "azurerm_resource_group" "rg" {
+  name     = "demo-rg"
+  location = "Central India"
+}
+
+resource "azurerm_linux_virtual_machine" "vm" {
+  name           = "demo-vm"
+  size           = "Standard_B1s"
+  admin_username = "azureuser"
+}
+`;
+    }
+
+});
 function generateDynamicYAML(
     frontend,
     backend,
