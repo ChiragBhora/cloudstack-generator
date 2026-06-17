@@ -173,6 +173,8 @@ document.getElementById("multiStepForm")
 
         const backend =
             document.getElementById("backend")?.value || "";
+        const target =
+            document.getElementById("target")?.value || "";
 
         const serviceConnection =
              document.getElementById("serviceConnection")?.value || "";
@@ -189,30 +191,52 @@ document.getElementById("multiStepForm")
         let yamlCode = "";
 
         if (
-            frontend === "React" &&
-            backend === "NodeJS" &&
-            target === "Azure App Service"
-        ) {
-           yamlCode = generateReactNodeAppServiceYAML(
-                serviceConnection,
-                appName,
-                resourceGroup
-);
-        }
-        else if (
-            frontend === "React" &&
-            backend === "NodeJS" &&
-            target === "Azure VM"
-        ) {
-            yamlCode = generateReactNodeVMYAML();
-        }
-        else {
-            yamlCode = `# Template not available yet
+    frontend === "React" &&
+    backend === "NodeJS" &&
+    target === "Azure App Service"
+) {
+    yamlCode = generateReactNodeAppServiceYAML(
+        serviceConnection,
+        appName,
+        resourceGroup
+    );
+}
+else if (
+    frontend === "React" &&
+    backend === "NodeJS" &&
+    target === "Azure VM"
+) {
+    yamlCode = generateReactNodeVMYAML();
+}
+else if (
+    frontend === "Angular" &&
+    backend === ".NET" &&
+    target === "Azure App Service"
+) {
+    yamlCode = generateAngularDotNetYAML();
+}
 
-        Frontend: ${frontend}
-        Backend: ${backend}
-        Target: ${target}`;
-        }
+else if (
+    frontend === "HTML/CSS/JS" &&
+    target === "Azure App Service"
+) {
+    yamlCode = generateStaticWebsiteYAML();
+}
+
+else if (
+    backend === "Python" &&
+    target === "Azure VM"
+) {
+    yamlCode = generatePythonVMYAML();
+}
+
+else {
+    yamlCode = `# Template not available yet
+
+Frontend: ${frontend}
+Backend: ${backend}
+Target: ${target}`;
+}
 
         output.value = yamlCode;
     }
@@ -308,6 +332,64 @@ steps:
 
 - task: CopyFilesOverSSH@0
   displayName: Deploy to VM
+`;
+}
+function generateAngularDotNetYAML() {
+    return `
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+
+- script: dotnet restore
+
+- script: dotnet build
+
+- task: AzureWebApp@1
+`;
+}
+
+function generateStaticWebsiteYAML() {
+    return `
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- task: ArchiveFiles@2
+
+- task: AzureWebApp@1
+`;
+}
+
+function generatePythonVMYAML() {
+    return `
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.11'
+
+- script: pip install -r requirements.txt
+
+- task: CopyFilesOverSSH@0
 `;
 }
 document
