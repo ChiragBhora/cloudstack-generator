@@ -46,116 +46,92 @@ const dynamicFields = document.getElementById("dynamicFields");
 deploymentType.addEventListener("change", () => {
 
     if (deploymentType.value === "application") {
-       
-    dynamicFields.innerHTML = `
-        <label>Frontend Type</label>
-        <select id="frontend">
-            <option>React</option>
-            <option>Angular</option>
-            <option>Vue</option>
-            <option>HTML/CSS/JS</option>
-        </select>
 
-        <label>Backend Type</label>
-        <select id="backend">
-            <option>NodeJS</option>
-            <option>Python</option>
-            <option>Java</option>
-            <option>.NET</option>
-        </select>
+        dynamicFields.innerHTML = `
+            <label>Frontend Type</label>
+            <select id="frontend">
+                <option>React</option>
+                <option>Angular</option>
+                <option>Vue</option>
+                <option>HTML/CSS/JS</option>
+            </select>
 
-        <label>Deployment Target</label>
-        <select id="target">
-            <option>Azure App Service</option>
-            <option>Azure VM</option>
-        </select>
+            <label>Backend Type</label>
+            <select id="backend">
+                <option>NodeJS</option>
+                <option>Python</option>
+                <option>Java</option>
+                <option>.NET</option>
+            </select>
 
-        <label>Azure Service Connection</label>
-        <input
-            type="text"
-            id="serviceConnection"
-            placeholder="My-ServiceConnection">
+            <label>Deployment Target</label>
+            <select id="target">
+                <option>Azure App Service</option>
+                <option>Azure VM</option>
+            </select>
 
-        <label>App Service Name</label>
-        <input
-            type="text"
-            id="appName"
-            placeholder="my-web-app">
+            <label>Azure Service Connection</label>
+            <input type="text" id="serviceConnection">
 
-        <label>Resource Group Name</label>
-        <input
-            type="text"
-            id="resourceGroup"
-            placeholder="rg-dev">
+            <label>App Service Name</label>
+            <input type="text" id="appName">
+
+            <label>Resource Group Name</label>
+            <input type="text" id="resourceGroup">
+
             <label>Environment</label>
+            <select id="environment">
+                <option>Dev</option>
+                <option>QA</option>
+                <option>Prod</option>
+            </select>
+        `;
+    }
 
-<select id="environment">
-    <option>Dev</option>
-    <option>QA</option>
-    <option>Prod</option>
-</select>
-    `;
-}
+    else if (deploymentType.value === "infrastructure") {
 
-   else if (deploymentType.value === "infrastructure") {
-    
-    dynamicFields.innerHTML = `
-        <label>IaC Tool</label>
-        <select>
-            <option>Terraform</option>
-        </select>
+        dynamicFields.innerHTML = `
+            <label>IaC Tool</label>
+            <select>
+                <option>Terraform</option>
+            </select>
 
-        <label>Cloud Provider</label>
-        <select>
-            <option>Azure</option>
-        </select>
-<label>Azure Region</label>
-<select id="azureLocation">
-    <option>Central India</option>
-    <option>South India</option>
-    <option>West India</option>
-    <option>East US</option>
-    <option>East US 2</option>
-    <option>West US</option>
-    <option>North Europe</option>
-    <option>West Europe</option>
-    <option>UK South</option>
-    <option>Southeast Asia</option>
-    <option>Australia East</option>
-</select>
+            <label>Cloud Provider</label>
+            <select>
+                <option>Azure</option>
+            </select>
 
-        <label>Resources</label>
+            <label>Azure Region</label>
+            <select id="azureLocation">
+                <option>Central India</option>
+                <option>South India</option>
+                <option>West India</option>
+                <option>East US</option>
+                <option>East US 2</option>
+                <option>West US</option>
+                <option>North Europe</option>
+                <option>West Europe</option>
+                <option>UK South</option>
+                <option>Southeast Asia</option>
+                <option>Australia East</option>
+            </select>
 
-        <div class="checkbox-group">
+            <label>Resources</label>
 
-            <label>
-                <input type="checkbox" id="rgCheck">
-                Resource Group
-            </label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="rgCheck"> Resource Group</label>
+                <label><input type="checkbox" id="vmCheck"> Virtual Machine</label>
+                <label><input type="checkbox" id="storageCheck"> Storage Account</label>
+                <label><input type="checkbox" id="vnetCheck"> Virtual Network</label>
+            </div>
 
-            <label>
-                <input type="checkbox" id="vmCheck">
-                Virtual Machine
-            </label>
-
-            <label>
-                <input type="checkbox" id="storageCheck">
-                Storage Account
-            </label>
-
-            <label>
-                <input type="checkbox" id="vnetCheck">
-                Virtual Network
-            </label>
-
-        </div>
-
-        <div id="resourceConfig"></div>
-    `;
-}
+            <div id="resourceConfig"></div>
+        `;
+    }
 });
+
 // ------------------------
-// VM Configuration
+// Resource Configuration
 // ------------------------
 document.addEventListener("change", (event) => {
 
@@ -171,30 +147,26 @@ document.addEventListener("change", (event) => {
     const configDiv = document.getElementById("resourceConfig");
 
     if (!configDiv) return;
-if (
-    event.target.id === "vmCheck" &&
-    event.target.checked
-) {
-    document.getElementById("rgCheck").checked = true;
-    document.getElementById("vnetCheck").checked = true;
-}
+
+    if (
+        event.target.id === "vmCheck" &&
+        event.target.checked
+    ) {
+        document.getElementById("rgCheck").checked = true;
+        document.getElementById("vnetCheck").checked = true;
+    }
+
     let html = "";
 
     if (document.getElementById("rgCheck")?.checked) {
-
         html += `
             <h3>Resource Group</h3>
-
             <label>Resource Group Name</label>
-<input
-    type="text"
-    id="rgName"
-    placeholder="my-resource-group">
+            <input type="text" id="rgName">
         `;
     }
 
     if (document.getElementById("vmCheck")?.checked) {
-
         html += `
             <h3>Virtual Machine</h3>
 
@@ -209,42 +181,33 @@ if (
             </select>
 
             <label>Admin Username</label>
-<input
-    type="text"
-    id="adminUser"
-    placeholder="azureuser">
-    <label>Subnet Name</label>
-<input type="text" id="subnetName">
+            <input type="text" id="adminUser">
 
-<label>Public IP Name</label>
-<input type="text" id="publicIpName">
+            <label>Subnet Name</label>
+            <input type="text" id="subnetName">
 
-<label>Network Interface Name</label>
-<input type="text" id="nicName">
-<label>Admin Password</label>
-<input
-    type="password"
-    id="adminPassword"
-    placeholder="Password@123456">
+            <label>Public IP Name</label>
+            <input type="text" id="publicIpName">
+
+            <label>Network Interface Name</label>
+            <input type="text" id="nicName">
+
+            <label>Admin Password</label>
+            <input type="password" id="adminPassword">
         `;
     }
 
-
     if (document.getElementById("storageCheck")?.checked) {
-
         html += `
             <h3>Storage Account</h3>
-
             <label>Storage Name</label>
             <input type="text" id="storageName">
         `;
     }
 
     if (document.getElementById("vnetCheck")?.checked) {
-
         html += `
             <h3>Virtual Network</h3>
-
             <label>VNet Name</label>
             <input type="text" id="vnetName">
         `;
@@ -252,23 +215,24 @@ if (
 
     configDiv.innerHTML = html;
 });
+
 // ------------------------
-// Generate Output
+// Submit Event
 // ------------------------
 document.getElementById("multiStepForm")
 .addEventListener("submit", (e) => {
 
     e.preventDefault();
 
-    const output = document.getElementById("terraformOutput");
-    const outputTitle = document.getElementById("outputTitle");
-    const projectName =
-    document.getElementById("projectName")?.value.trim();
+    const output =
+        document.getElementById("terraformOutput");
 
-if (!projectName) {
-    alert("Project Name is required");
-    return;
-}
+    const outputTitle =
+        document.getElementById("outputTitle");
+
+    if (!validateProject()) {
+        return;
+    }
 
     if (deploymentType.value === "application") {
 
@@ -286,25 +250,24 @@ if (!projectName) {
 
         const appName =
             document.getElementById("appName")?.value || "";
-            if (!serviceConnection) {
-    alert("Service Connection is required");
-    return;
-}
 
-if (!appName) {
-    alert("App Service Name is required");
-    return;
-}
+        if (!validateApplication(
+            serviceConnection,
+            appName
+        )) {
+            return;
+        }
 
         const resourceGroup =
             document.getElementById("resourceGroup")?.value || "";
+
         const environment =
-    document.getElementById("environment")?.value || "Dev";
+            document.getElementById("environment")?.value || "Dev";
 
         outputTitle.textContent =
             "Generated Azure DevOps YAML";
 
-        const yamlCode = generateDynamicYAML(
+        output.value = generateDynamicYAML(
             frontend,
             backend,
             target,
@@ -313,369 +276,13 @@ if (!appName) {
             resourceGroup,
             environment
         );
-
-        output.value = yamlCode;
     }
 
     else if (deploymentType.value === "infrastructure") {
 
-    outputTitle.textContent =
-        "Generated Terraform";
+        outputTitle.textContent =
+            "Generated Terraform";
 
-    output.value = generateTerraform();
-}
-
-});
-function generateDynamicYAML(
-    frontend,
-    backend,
-    target,
-    serviceConnection,
-    appName,
-    resourceGroup,
-    environment
-) {
-
-    let buildSteps = "";
-    let testSteps = `
-- script: echo Running Tests...
-  displayName: Run Tests
-`;
-
-    // Backend Build Logic
-    if (backend === "NodeJS") {
-
-        buildSteps = `
-- task: NodeTool@0
-  inputs:
-    versionSpec: '18.x'
-
-- script: npm install
-
-- script: npm run build
-`;
-    }
-
-    else if (backend === "Python") {
-
-        buildSteps = `
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.11'
-
-- script: pip install -r requirements.txt
-`;
-    }
-
-    else if (backend === "Java") {
-
-        buildSteps = `
-- task: Maven@3
-`;
-    }
-
-    else if (backend === ".NET") {
-
-        buildSteps = `
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '8.x'
-
-- script: dotnet restore
-
-- script: dotnet build
-`;
-    }
-
-    let deployStep = "";
-
-    // Deployment Logic
-    if (target === "Azure App Service") {
-
-        deployStep = `
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: '${serviceConnection}'
-    appName: '${appName}'
-    resourceGroupName: '${resourceGroup}'
-`;
-    }
-
-    else {
-
-        deployStep = `
-- task: CopyFilesOverSSH@0
-  displayName: Deploy To Azure VM
-`;
-    }
-
-   return `
-trigger:
-- main
-
-stages:
-
-- stage: Build
-  jobs:
-
-  - job: BuildJob
-
-    pool:
-      vmImage: ubuntu-latest
-
-    steps:
-
-${buildSteps}
-
-- stage: Test
-
-  dependsOn: Build
-
-  jobs:
-
-  - job: TestJob
-
-    pool:
-      vmImage: ubuntu-latest
-
-    steps:
-
-${testSteps}
-
-- stage: Deploy
-
-  dependsOn: Test
-
-  jobs:
-
-  - deployment: DeployJob
-
-    environment: ${environment}
-
-    pool:
-      vmImage: ubuntu-latest
-
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-
-${deployStep}`;
-}
-function generateTerraform() {
-    const location =
-    document.getElementById("azureLocation")?.value
-    || "Central India";
-const subnetName =
-    document.getElementById("subnetName")?.value ||
-    "demo-subnet";
-
-const publicIpName =
-    document.getElementById("publicIpName")?.value ||
-    "demo-pip";
-
-const nicName =
-    document.getElementById("nicName")?.value ||
-    "demo-nic";
-    let tf = `
-terraform {
-  required_providers {
-    azurerm = {
-      source = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-variable "location" {
-  type = string
-  default = "${location}"
-}
-
-variable "resource_group_name" {
-  type = string
-  default = "${rgName}"
-}
-`;
-    if (document.getElementById("rgCheck")?.checked) {
-
-        tf += `
-resource "azurerm_resource_group" "rg" {
-  name     = "${document.getElementById('rgName')?.value || 'demo-rg'}"
-  location = ${location}
-}
-`;
-    }
-
-    if (document.getElementById("storageCheck")?.checked) {
-
-        tf += `
-resource "azurerm_storage_account" "storage" {
-  name                     = "${document.getElementById('storageName')?.value || 'demostorage'}"
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = "${location}"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
-`;
-    }
-
-    if (document.getElementById("vnetCheck")?.checked) {
-
-        tf += `
-resource "azurerm_virtual_network" "vnet" {
-  name                = "${document.getElementById('vnetName')?.value || 'demo-vnet'}"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = "${location}"
-  address_space       = ["10.0.0.0/16"]
-}
-`;
-    }
-
-   if (document.getElementById("vmCheck")?.checked) {
-
-    tf += `
-resource "azurerm_subnet" "subnet" {
-  name                 = "${subnetName}"
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
-}
-
-resource "azurerm_public_ip" "pip" {
-  name                = "${publicIpName}"
-  location            = "${location}"
-  resource_group_name = azurerm_resource_group.rg.name
-  allocation_method   = "Dynamic"
-}
-
-resource "azurerm_network_interface" "nic" {
-  name                = "${nicName}"
-  location            = "${location}"
-  resource_group_name = azurerm_resource_group.rg.name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.subnet.id
-    private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.pip.id
-  }
-}
-
-resource "azurerm_linux_virtual_machine" "vm" {
-  name                = "${document.getElementById('vmName')?.value || 'demo-vm'}"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = "${location}"
-
-  network_interface_ids = [
-    azurerm_network_interface.nic.id
-  ]
-
-  size           = "${document.getElementById('vmSize')?.value || 'Standard_B1s'}"
-  admin_username = "${document.getElementById('adminUser')?.value || 'azureuser'}"
-disable_password_authentication = false
-
-admin_password = "${document.getElementById('adminPassword')?.value || 'Password@123456'}"
-
-os_disk {
-  caching              = "ReadWrite"
-  storage_account_type = "Standard_LRS"
-}
-
-source_image_reference {
-  publisher = "Canonical"
-  offer     = "0001-com-ubuntu-server-jammy"
-  sku       = "22_04-lts"
-  version   = "latest"
-}
-}
-`;
-}
-tf += `
-
-output "resource_group_name" {
-  value = azurerm_resource_group.rg.name
-}
-
-output "vm_name" {
-  value = azurerm_linux_virtual_machine.vm.name
-}
-`;
-tf += `
-
-output "resource_group_name" {
-  value = azurerm_resource_group.rg.name
-}
-
-output "vm_name" {
-  value = azurerm_linux_virtual_machine.vm.name
-}
-`;
-    return tf;
-}
-document
-.getElementById("downloadBtn")
-.addEventListener("click", () => {
-
-    const content =
-        document.getElementById("terraformOutput").value;
-
-    if (!content) {
-        alert("Generate output first");
-        return;
-    }
-
-    const deployment =
-        document.getElementById("deploymentType").value;
-
-    const filename =
-        deployment === "application"
-            ? "azure-pipelines.yml"
-            : "main.tf";
-
-    const blob = new Blob(
-        [content],
-        { type: "text/plain" }
-    );
-
-    const link =
-        document.createElement("a");
-
-    link.href =
-        URL.createObjectURL(blob);
-
-    link.download =
-        filename;
-
-    link.click();
-});
-document
-.getElementById("copyBtn")
-.addEventListener("click", async () => {
-
-    const content =
-        document.getElementById("terraformOutput").value;
-
-    if (!content) {
-        alert("Generate output first");
-        return;
-    }
-
-    try {
-
-        await navigator.clipboard.writeText(content);
-
-        alert("Output copied successfully!");
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert("Copy failed");
+        output.value = generateTerraform();
     }
 });
