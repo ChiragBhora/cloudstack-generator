@@ -9,30 +9,47 @@ let currentStep = 0;
 // Step Navigation
 // ------------------------
 function updateForm() {
+
     steps.forEach((step, index) => {
-        step.classList.toggle("active", index === currentStep);
+        step.classList.toggle(
+            "active",
+            index === currentStep
+        );
     });
 
-    const progress = ((currentStep + 1) / steps.length) * 100;
-    progressBar.style.width = progress + "%";
+    const progress =
+        ((currentStep + 1) / steps.length) * 100;
+
+    progressBar.style.width =
+        progress + "%";
 }
 
 nextBtns.forEach(btn => {
+
     btn.addEventListener("click", () => {
+
         if (currentStep < steps.length - 1) {
+
             currentStep++;
+
             updateForm();
         }
     });
+
 });
 
 prevBtns.forEach(btn => {
+
     btn.addEventListener("click", () => {
+
         if (currentStep > 0) {
+
             currentStep--;
+
             updateForm();
         }
     });
+
 });
 
 updateForm();
@@ -40,14 +57,19 @@ updateForm();
 // ------------------------
 // Dynamic Fields
 // ------------------------
-const deploymentType = document.getElementById("deploymentType");
-const dynamicFields = document.getElementById("dynamicFields");
+
+const deploymentType =
+    document.getElementById("deploymentType");
+
+const dynamicFields =
+    document.getElementById("dynamicFields");
 
 deploymentType.addEventListener("change", () => {
 
     if (deploymentType.value === "application") {
 
         dynamicFields.innerHTML = `
+
             <label>Frontend Type</label>
             <select id="frontend">
                 <option>React</option>
@@ -71,13 +93,22 @@ deploymentType.addEventListener("change", () => {
             </select>
 
             <label>Azure Service Connection</label>
-            <input type="text" id="serviceConnection">
+            <input
+                type="text"
+                id="serviceConnection"
+                placeholder="My-ServiceConnection">
 
             <label>App Service Name</label>
-            <input type="text" id="appName">
+            <input
+                type="text"
+                id="appName"
+                placeholder="my-web-app">
 
             <label>Resource Group Name</label>
-            <input type="text" id="resourceGroup">
+            <input
+                type="text"
+                id="resourceGroup"
+                placeholder="rg-dev">
 
             <label>Environment</label>
             <select id="environment">
@@ -91,6 +122,7 @@ deploymentType.addEventListener("change", () => {
     else if (deploymentType.value === "infrastructure") {
 
         dynamicFields.innerHTML = `
+
             <label>IaC Tool</label>
             <select>
                 <option>Terraform</option>
@@ -102,6 +134,7 @@ deploymentType.addEventListener("change", () => {
             </select>
 
             <label>Azure Region</label>
+
             <select id="azureLocation">
                 <option>Central India</option>
                 <option>South India</option>
@@ -119,10 +152,27 @@ deploymentType.addEventListener("change", () => {
             <label>Resources</label>
 
             <div class="checkbox-group">
-                <label><input type="checkbox" id="rgCheck"> Resource Group</label>
-                <label><input type="checkbox" id="vmCheck"> Virtual Machine</label>
-                <label><input type="checkbox" id="storageCheck"> Storage Account</label>
-                <label><input type="checkbox" id="vnetCheck"> Virtual Network</label>
+
+                <label>
+                    <input type="checkbox" id="rgCheck">
+                    Resource Group
+                </label>
+
+                <label>
+                    <input type="checkbox" id="vmCheck">
+                    Virtual Machine
+                </label>
+
+                <label>
+                    <input type="checkbox" id="storageCheck">
+                    Storage Account
+                </label>
+
+                <label>
+                    <input type="checkbox" id="vnetCheck">
+                    Virtual Network
+                </label>
+
             </div>
 
             <div id="resourceConfig"></div>
@@ -133,6 +183,7 @@ deploymentType.addEventListener("change", () => {
 // ------------------------
 // Resource Configuration
 // ------------------------
+
 document.addEventListener("change", (event) => {
 
     if (
@@ -144,7 +195,8 @@ document.addEventListener("change", (event) => {
         return;
     }
 
-    const configDiv = document.getElementById("resourceConfig");
+    const configDiv =
+        document.getElementById("resourceConfig");
 
     if (!configDiv) return;
 
@@ -152,21 +204,33 @@ document.addEventListener("change", (event) => {
         event.target.id === "vmCheck" &&
         event.target.checked
     ) {
+
         document.getElementById("rgCheck").checked = true;
         document.getElementById("vnetCheck").checked = true;
     }
 
     let html = "";
 
-    if (document.getElementById("rgCheck")?.checked) {
+    if (
+        document.getElementById("rgCheck")?.checked
+    ) {
+
         html += `
             <h3>Resource Group</h3>
+
             <label>Resource Group Name</label>
-            <input type="text" id="rgName">
+
+            <input
+                type="text"
+                id="rgName"
+                placeholder="demo-rg">
         `;
     }
 
-    if (document.getElementById("vmCheck")?.checked) {
+    if (
+        document.getElementById("vmCheck")?.checked
+    ) {
+
         html += `
             <h3>Virtual Machine</h3>
 
@@ -197,17 +261,25 @@ document.addEventListener("change", (event) => {
         `;
     }
 
-    if (document.getElementById("storageCheck")?.checked) {
+    if (
+        document.getElementById("storageCheck")?.checked
+    ) {
+
         html += `
             <h3>Storage Account</h3>
+
             <label>Storage Name</label>
             <input type="text" id="storageName">
         `;
     }
 
-    if (document.getElementById("vnetCheck")?.checked) {
+    if (
+        document.getElementById("vnetCheck")?.checked
+    ) {
+
         html += `
             <h3>Virtual Network</h3>
+
             <label>VNet Name</label>
             <input type="text" id="vnetName">
         `;
@@ -217,8 +289,9 @@ document.addEventListener("change", (event) => {
 });
 
 // ------------------------
-// Submit Event
+// Generate Output
 // ------------------------
+
 document.getElementById("multiStepForm")
 .addEventListener("submit", (e) => {
 
@@ -251,10 +324,12 @@ document.getElementById("multiStepForm")
         const appName =
             document.getElementById("appName")?.value || "";
 
-        if (!validateApplication(
-            serviceConnection,
-            appName
-        )) {
+        if (
+            !validateApplication(
+                serviceConnection,
+                appName
+            )
+        ) {
             return;
         }
 
@@ -280,9 +355,14 @@ document.getElementById("multiStepForm")
 
     else if (deploymentType.value === "infrastructure") {
 
+        if (!validateInfrastructure()) {
+            return;
+        }
+
         outputTitle.textContent =
             "Generated Terraform";
 
-        output.value = generateTerraform();
+        output.value =
+            generateTerraform();
     }
 });
