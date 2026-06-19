@@ -102,6 +102,20 @@ deploymentType.addEventListener("change", () => {
         <select>
             <option>Azure</option>
         </select>
+<label>Azure Region</label>
+<select id="azureLocation">
+    <option>Central India</option>
+    <option>South India</option>
+    <option>West India</option>
+    <option>East US</option>
+    <option>East US 2</option>
+    <option>West US</option>
+    <option>North Europe</option>
+    <option>West Europe</option>
+    <option>UK South</option>
+    <option>Southeast Asia</option>
+    <option>Australia East</option>
+</select>
 
         <label>Resources</label>
 
@@ -158,8 +172,11 @@ document.addEventListener("change", (event) => {
         html += `
             <h3>Resource Group</h3>
 
-            <label>RG Name</label>
-            <input type="text" id="rgName">
+            <label>Resource Group Name</label>
+<input
+    type="text"
+    id="rgName"
+    placeholder="my-resource-group">
         `;
     }
 
@@ -179,7 +196,10 @@ document.addEventListener("change", (event) => {
             </select>
 
             <label>Admin Username</label>
-            <input type="text" id="adminUser">
+<input
+    type="text"
+    id="adminUser"
+    placeholder="azureuser">
         `;
     }
 
@@ -354,6 +374,9 @@ ${deployStep}
 `;
 }
 function generateTerraform() {
+    const location =
+    document.getElementById("azureLocation")?.value
+    || "Central India";
 
     let tf = "";
 
@@ -362,7 +385,7 @@ function generateTerraform() {
         tf += `
 resource "azurerm_resource_group" "rg" {
   name     = "${document.getElementById('rgName')?.value || 'demo-rg'}"
-  location = "Central India"
+  location = "${location}"
 }
 `;
     }
@@ -372,6 +395,7 @@ resource "azurerm_resource_group" "rg" {
         tf += `
 resource "azurerm_storage_account" "storage" {
   name = "${document.getElementById('storageName')?.value || 'demostorage'}"
+  location                 = "${location}"
   account_tier             = "Standard"
   account_replication_type = "LRS"
 }
@@ -383,6 +407,7 @@ resource "azurerm_storage_account" "storage" {
         tf += `
 resource "azurerm_virtual_network" "vnet" {
   name = "${document.getElementById('vnetName')?.value || 'demo-vnet'}"
+  location = "${location}"
   address_space = ["10.0.0.0/16"]
 }
 `;
@@ -392,8 +417,10 @@ resource "azurerm_virtual_network" "vnet" {
 
         tf += `
 resource "azurerm_linux_virtual_machine" "vm" {
-  name = "${document.getElementById('vmName')?.value || 'demo-vm'}"
-  size = "Standard_B1s"
+  name           = "${document.getElementById('vmName')?.value || 'demo-vm'}"
+  location       = "${location}"
+  size           = "${document.getElementById('vmSize')?.value || 'Standard_B1s'}"
+  admin_username = "${document.getElementById('adminUser')?.value || 'azureuser'}"
 }
 `;
     }
