@@ -200,8 +200,17 @@ document.addEventListener("change", (event) => {
     type="text"
     id="adminUser"
     placeholder="azureuser">
+    <label>Subnet Name</label>
+<input type="text" id="subnetName">
+
+<label>Public IP Name</label>
+<input type="text" id="publicIpName">
+
+<label>Network Interface Name</label>
+<input type="text" id="nicName">
         `;
     }
+
 
     if (document.getElementById("storageCheck")?.checked) {
 
@@ -377,7 +386,17 @@ function generateTerraform() {
     const location =
     document.getElementById("azureLocation")?.value
     || "Central India";
+const subnetName =
+    document.getElementById("subnetName")?.value ||
+    "demo-subnet";
 
+const publicIpName =
+    document.getElementById("publicIpName")?.value ||
+    "demo-pip";
+
+const nicName =
+    document.getElementById("nicName")?.value ||
+    "demo-nic";
     let tf = "";
 
     if (document.getElementById("rgCheck")?.checked) {
