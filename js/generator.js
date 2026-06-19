@@ -10,7 +10,8 @@ function generateDynamicYAML(
     nodeVersion,
     pythonVersion,
     javaVersion,
-    dotnetVersion
+    dotnetVersion,
+    buildConfiguration
 ) {
 
     let buildSteps = "";
@@ -148,7 +149,7 @@ trigger:
       - develop
       name: $(Date:yyyyMMdd)$(Rev:.r)
 variables:
-  buildConfiguration: Release
+  buildConfiguration: ${buildConfiguration}
   environmentName: ${environment}
 stages:
 

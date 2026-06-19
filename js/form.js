@@ -193,6 +193,11 @@ document.addEventListener("change", (event) => {
     <option>3.11</option>
     <option>3.12</option>
 </select>
+<label>Build Configuration</label>
+<select id="buildConfiguration">
+    <option>Debug</option>
+    <option>Release</option>
+</select>
         `;
     }
 
@@ -425,6 +430,9 @@ document.getElementById("multiStepForm")
             document.getElementById("javaVersion")?.value || "17";
             const dotnetVersion =
             document.getElementById("dotnetVersion")?.value || "8.0";
+            const buildConfiguration =
+            document.getElementById("buildConfiguration")?.value
+    || "Release";
         outputTitle.textContent =
             "Generated Azure DevOps YAML";
 
@@ -440,7 +448,8 @@ document.getElementById("multiStepForm")
             nodeVersion,
             pythonVersion,
             javaVersion,
-            dotnetVersion
+            dotnetVersion,
+            buildConfiguration
         );
     }
 
