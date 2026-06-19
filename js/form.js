@@ -65,7 +65,65 @@ const dynamicFields =
     document.getElementById("dynamicFields");
 
 deploymentType.addEventListener("change", () => {
+document.addEventListener("change", (event) => {
 
+    if (event.target.id !== "backend") {
+        return;
+    }
+
+    const versionFields =
+        document.getElementById("versionFields");
+
+    if (!versionFields) return;
+
+    if (event.target.value === "NodeJS") {
+
+        versionFields.innerHTML = `
+            <label>Node Version</label>
+            <select id="nodeVersion">
+                <option>18.x</option>
+                <option>20.x</option>
+                <option>22.x</option>
+            </select>
+        `;
+    }
+
+    else if (event.target.value === "Python") {
+
+        versionFields.innerHTML = `
+            <label>Python Version</label>
+            <select id="pythonVersion">
+                <option>3.10</option>
+                <option>3.11</option>
+                <option>3.12</option>
+            </select>
+        `;
+    }
+
+    else if (event.target.value === "Java") {
+
+        versionFields.innerHTML = `
+            <label>Java Version</label>
+            <select id="javaVersion">
+                <option>17</option>
+                <option>21</option>
+            </select>
+        `;
+    }
+
+    else if (event.target.value === ".NET") {
+
+        versionFields.innerHTML = `
+            <label>.NET Version</label>
+            <select id="dotnetVersion">
+                <option>6.0</option>
+                <option>7.0</option>
+                <option>8.0</option>
+            </select>
+        `;
+    }
+
+});
     if (deploymentType.value === "application") {
 
         dynamicFields.innerHTML = `
@@ -85,6 +143,7 @@ deploymentType.addEventListener("change", () => {
                 <option>Java</option>
                 <option>.NET</option>
             </select>
+            <div id="versionFields"></div>
 
             <label>Deployment Target</label>
             <select id="target">
@@ -121,6 +180,18 @@ deploymentType.addEventListener("change", () => {
     <option>ubuntu-latest</option>
     <option>windows-latest</option>
     <option>macos-latest</option>
+</select>
+<label>Node Version</label>
+<select id="nodeVersion">
+    <option>18.x</option>
+    <option>20.x</option>
+    <option>22.x</option>
+</select>
+<label>Python Version</label>
+<select id="pythonVersion">
+    <option>3.10</option>
+    <option>3.11</option>
+    <option>3.12</option>
 </select>
         `;
     }
@@ -346,7 +417,14 @@ document.getElementById("multiStepForm")
             document.getElementById("environment")?.value || "Dev";
         const agentOS =
             document.getElementById("agentOS")?.value || "ubuntu-latest";
-
+        const nodeVersion =
+            document.getElementById("nodeVersion")?.value || "18.x";
+        const pythonVersion =
+            document.getElementById("pythonVersion")?.value || "3.11";
+        const javaVersion =
+            document.getElementById("javaVersion")?.value || "17";
+            const dotnetVersion =
+            document.getElementById("dotnetVersion")?.value || "8.0";
         outputTitle.textContent =
             "Generated Azure DevOps YAML";
 
@@ -358,7 +436,11 @@ document.getElementById("multiStepForm")
             appName,
             resourceGroup,
             environment,
-            agentOS
+            agentOS,
+            nodeVersion,
+            pythonVersion,
+            javaVersion,
+            dotnetVersion
         );
     }
 

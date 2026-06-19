@@ -6,7 +6,11 @@ function generateDynamicYAML(
     appName,
     resourceGroup,
     environment,
-    agentOS
+    agentOS,
+    nodeVersion,
+    pythonVersion,
+    javaVersion,
+    dotnetVersion
 ) {
 
     let buildSteps = "";
@@ -65,7 +69,7 @@ else if (frontend === "HTML/CSS/JS") {
         buildSteps = `
 - task: NodeTool@0
   inputs:
-    versionSpec: '18.x'
+    versionSpec: '${nodeVersion}'
 
 - script: npm install
   displayName: Install Dependencies
@@ -80,7 +84,7 @@ else if (frontend === "HTML/CSS/JS") {
         buildSteps = `
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '3.11'
+    versionSpec: '${pythonVersion}'
 
 - script: pip install -r requirements.txt
   displayName: Install Dependencies
@@ -89,10 +93,14 @@ else if (frontend === "HTML/CSS/JS") {
 
     else if (backend === "Java") {
 
-        buildSteps = `
+    buildSteps = `
 - task: Maven@3
   displayName: Build Java Application
+
+  inputs:
+    jdkVersionOption: '${javaVersion}'
 `;
+
     }
 
     else if (backend === ".NET") {
@@ -101,7 +109,7 @@ else if (frontend === "HTML/CSS/JS") {
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
-    version: '8.x'
+    version: '${dotnetVersion}'
 
 - script: dotnet restore
   displayName: Restore Packages
