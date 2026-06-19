@@ -181,18 +181,7 @@ document.addEventListener("change", (event) => {
     <option>windows-latest</option>
     <option>macos-latest</option>
 </select>
-<label>Node Version</label>
-<select id="nodeVersion">
-    <option>18.x</option>
-    <option>20.x</option>
-    <option>22.x</option>
-</select>
-<label>Python Version</label>
-<select id="pythonVersion">
-    <option>3.10</option>
-    <option>3.11</option>
-    <option>3.12</option>
-</select>
+
 <label>Build Configuration</label>
 <select id="buildConfiguration">
     <option>Debug</option>
@@ -261,6 +250,14 @@ document.addEventListener("change", (event) => {
         `;
     }
 });
+const backendSelect =
+    document.getElementById("backend");
+
+if (backendSelect) {
+    backendSelect.dispatchEvent(
+        new Event("change")
+    );
+}
 
 // ------------------------
 // Resource Configuration
@@ -384,6 +381,12 @@ document.getElementById("multiStepForm")
 
     const outputTitle =
         document.getElementById("outputTitle");
+    const repoName =
+        document.getElementById("repoName")?.value || "";
+    const repoUrl =
+        document.getElementById("repoUrl")?.value || "";
+    const repoType =
+        document.getElementById("repoType")?.value || "";
 
     if (!validateProject()) {
         return;
@@ -428,29 +431,33 @@ document.getElementById("multiStepForm")
             document.getElementById("pythonVersion")?.value || "3.11";
         const javaVersion =
             document.getElementById("javaVersion")?.value || "17";
-            const dotnetVersion =
+        const dotnetVersion =
             document.getElementById("dotnetVersion")?.value || "8.0";
-            const buildConfiguration =
+        const buildConfiguration =
             document.getElementById("buildConfiguration")?.value
     || "Release";
         outputTitle.textContent =
             "Generated Azure DevOps YAML";
 
-        output.value = generateDynamicYAML(
+        output.value = 
+        generateDynamicYAML(
             frontend,
-            backend,
-            target,
-            serviceConnection,
-            appName,
-            resourceGroup,
-            environment,
-            agentOS,
-            nodeVersion,
-            pythonVersion,
-            javaVersion,
-            dotnetVersion,
-            buildConfiguration
-        );
+        backend,
+        target,
+        serviceConnection,
+        appName,
+        resourceGroup,
+        environment,
+        agentOS,
+        nodeVersion,
+        pythonVersion,
+        javaVersion,
+        dotnetVersion,
+        buildConfiguration,
+        repoType,
+        repoName,
+        repoUrl
+);
     }
 
     else if (deploymentType.value === "infrastructure") {
