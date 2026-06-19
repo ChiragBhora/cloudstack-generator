@@ -12,10 +12,18 @@ function generateDynamicYAML(
     javaVersion,
     dotnetVersion,
     buildConfiguration,
+    VariableGroup,
     repoType,
     repoName,
     repoUrl
 ) {
+      let variableGroupBlock = "";
+
+    if (variableGroup.trim()) {
+
+        variableGroupBlock = `
+- group: ${variableGroup}`;
+    }
 
     let buildSteps = "";
     let frontendBuild = "";
@@ -159,7 +167,8 @@ trigger:
       - main
       - develop
       name: $(Date:yyyyMMdd)$(Rev:.r)
-variables:
+variables:${variableGroupBlock}
+
   buildConfiguration: ${buildConfiguration}
   environmentName: ${environment}
 stages:

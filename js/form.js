@@ -187,6 +187,11 @@ document.addEventListener("change", (event) => {
     <option>Debug</option>
     <option>Release</option>
 </select>
+<label>Variable Group</label>
+<input
+    type="text"
+    id="variableGroup"
+    placeholder="My-Variable-Group">
         `;
     }
 
@@ -435,7 +440,10 @@ document.getElementById("multiStepForm")
             document.getElementById("dotnetVersion")?.value || "8.0";
         const buildConfiguration =
             document.getElementById("buildConfiguration")?.value
-    || "Release";
+            || "Release";
+        const variableGroup =
+            document.getElementById("variableGroup")?.value || "";
+    
         outputTitle.textContent =
             "Generated Azure DevOps YAML";
 
@@ -454,6 +462,7 @@ document.getElementById("multiStepForm")
         javaVersion,
         dotnetVersion,
         buildConfiguration,
+        variableGroup,
         repoType,
         repoName,
         repoUrl
