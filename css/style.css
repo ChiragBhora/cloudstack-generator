@@ -96,8 +96,14 @@ button:hover{
 }
 
 .checkbox-group label{
-    display:block;
+    display:flex;
+    align-items:center;
+    gap:10px;
     margin:10px 0;
+}
+.checkbox-group input[type="checkbox"]{
+    width:auto;
+    margin:0;
 }
 
 /* Output Header */

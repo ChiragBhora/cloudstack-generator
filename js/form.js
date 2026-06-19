@@ -46,7 +46,7 @@ const dynamicFields = document.getElementById("dynamicFields");
 deploymentType.addEventListener("change", () => {
 
     if (deploymentType.value === "application") {
-
+       
     dynamicFields.innerHTML = `
         <label>Frontend Type</label>
         <select id="frontend">
@@ -98,7 +98,7 @@ deploymentType.addEventListener("change", () => {
 }
 
    else if (deploymentType.value === "infrastructure") {
-
+    
     dynamicFields.innerHTML = `
         <label>IaC Tool</label>
         <select>
@@ -171,7 +171,13 @@ document.addEventListener("change", (event) => {
     const configDiv = document.getElementById("resourceConfig");
 
     if (!configDiv) return;
-
+if (
+    event.target.id === "vmCheck" &&
+    event.target.checked
+) {
+    document.getElementById("rgCheck").checked = true;
+    document.getElementById("vnetCheck").checked = true;
+}
     let html = "";
 
     if (document.getElementById("rgCheck")?.checked) {
@@ -215,6 +221,11 @@ document.addEventListener("change", (event) => {
 
 <label>Network Interface Name</label>
 <input type="text" id="nicName">
+<label>Admin Password</label>
+<input
+    type="password"
+    id="adminPassword"
+    placeholder="Password@123456">
         `;
     }
 
@@ -251,6 +262,13 @@ document.getElementById("multiStepForm")
 
     const output = document.getElementById("terraformOutput");
     const outputTitle = document.getElementById("outputTitle");
+    const projectName =
+    document.getElementById("projectName")?.value.trim();
+
+if (!projectName) {
+    alert("Project Name is required");
+    return;
+}
 
     if (deploymentType.value === "application") {
 
@@ -268,6 +286,15 @@ document.getElementById("multiStepForm")
 
         const appName =
             document.getElementById("appName")?.value || "";
+            if (!serviceConnection) {
+    alert("Service Connection is required");
+    return;
+}
+
+if (!appName) {
+    alert("App Service Name is required");
+    return;
+}
 
         const resourceGroup =
             document.getElementById("resourceGroup")?.value || "";
@@ -451,14 +478,36 @@ const publicIpName =
 const nicName =
     document.getElementById("nicName")?.value ||
     "demo-nic";
-    let tf = "";
+    let tf = `
+terraform {
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
+  }
+}
 
+provider "azurerm" {
+  features {}
+}
+
+variable "location" {
+  type = string
+  default = "${location}"
+}
+
+variable "resource_group_name" {
+  type = string
+  default = "${rgName}"
+}
+`;
     if (document.getElementById("rgCheck")?.checked) {
 
         tf += `
 resource "azurerm_resource_group" "rg" {
   name     = "${document.getElementById('rgName')?.value || 'demo-rg'}"
-  location = "${location}"
+  location = ${location}
 }
 `;
     }
@@ -529,10 +578,44 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
   size           = "${document.getElementById('vmSize')?.value || 'Standard_B1s'}"
   admin_username = "${document.getElementById('adminUser')?.value || 'azureuser'}"
+disable_password_authentication = false
+
+admin_password = "${document.getElementById('adminPassword')?.value || 'Password@123456'}"
+
+os_disk {
+  caching              = "ReadWrite"
+  storage_account_type = "Standard_LRS"
+}
+
+source_image_reference {
+  publisher = "Canonical"
+  offer     = "0001-com-ubuntu-server-jammy"
+  sku       = "22_04-lts"
+  version   = "latest"
+}
 }
 `;
 }
+tf += `
 
+output "resource_group_name" {
+  value = azurerm_resource_group.rg.name
+}
+
+output "vm_name" {
+  value = azurerm_linux_virtual_machine.vm.name
+}
+`;
+tf += `
+
+output "resource_group_name" {
+  value = azurerm_resource_group.rg.name
+}
+
+output "vm_name" {
+  value = azurerm_linux_virtual_machine.vm.name
+}
+`;
     return tf;
 }
 document
