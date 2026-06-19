@@ -5,13 +5,59 @@ function generateDynamicYAML(
     serviceConnection,
     appName,
     resourceGroup,
-    environment
+    environment,
+    agentOS
 ) {
 
     let buildSteps = "";
+    let frontendBuild = "";
+
+if (frontend === "React") {
+
+    frontendBuild = `
+- script: npm install
+  displayName: Install React Dependencies
+
+- script: npm run build
+  displayName: Build React App
+`;
+}
+
+else if (frontend === "Angular") {
+
+    frontendBuild = `
+- script: npm install
+  displayName: Install Angular Dependencies
+
+- script: ng build --configuration production
+  displayName: Build Angular App
+`;
+}
+
+else if (frontend === "Vue") {
+
+    frontendBuild = `
+- script: npm install
+  displayName: Install Vue Dependencies
+
+- script: npm run build
+  displayName: Build Vue App
+`;
+}
+
+else if (frontend === "HTML/CSS/JS") {
+
+    frontendBuild = `
+- script: echo Building Static Website
+  displayName: Static Website Build
+`;
+}
     let testSteps = `
-- script: echo Running Tests...
-  displayName: Run Tests
+- script: echo Running Unit Tests...
+  displayName: Unit Testing
+
+- script: echo Running Security Scan...
+  displayName: Security Validation
 `;
 
     if (backend === "NodeJS") {
@@ -88,8 +134,14 @@ function generateDynamicYAML(
 
     return `
 trigger:
-- main
-
+  branches:
+    include:
+      - main
+      - develop
+      name: $(Date:yyyyMMdd)$(Rev:.r)
+variables:
+  buildConfiguration: Release
+  environmentName: ${environment}
 stages:
 
 - stage: Build
@@ -99,14 +151,19 @@ stages:
   - job: BuildJob
 
     pool:
-      vmImage: ubuntu-latest
+      vmImage: ${agentOS}
 
     steps:
 
+${frontendBuild}
+
 ${buildSteps}
 
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.SourcesDirectory)'
+          ArtifactName: 'drop'
 - stage: Test
-
   dependsOn: Build
 
   jobs:
@@ -114,7 +171,7 @@ ${buildSteps}
   - job: TestJob
 
     pool:
-      vmImage: ubuntu-latest
+      vmImage: ${agentOS}
 
     steps:
 
@@ -131,7 +188,7 @@ ${testSteps}
     environment: ${environment}
 
     pool:
-      vmImage: ubuntu-latest
+      vmImage: ${agentOS}
 
     strategy:
       runOnce:

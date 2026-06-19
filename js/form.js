@@ -116,6 +116,12 @@ deploymentType.addEventListener("change", () => {
                 <option>QA</option>
                 <option>Prod</option>
             </select>
+            <label>Agent OS</label>
+<select id="agentOS">
+    <option>ubuntu-latest</option>
+    <option>windows-latest</option>
+    <option>macos-latest</option>
+</select>
         `;
     }
 
@@ -338,6 +344,8 @@ document.getElementById("multiStepForm")
 
         const environment =
             document.getElementById("environment")?.value || "Dev";
+        const agentOS =
+            document.getElementById("agentOS")?.value || "ubuntu-latest";
 
         outputTitle.textContent =
             "Generated Azure DevOps YAML";
@@ -349,7 +357,8 @@ document.getElementById("multiStepForm")
             serviceConnection,
             appName,
             resourceGroup,
-            environment
+            environment,
+            agentOS
         );
     }
 
