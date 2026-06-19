@@ -87,6 +87,13 @@ deploymentType.addEventListener("change", () => {
             type="text"
             id="resourceGroup"
             placeholder="rg-dev">
+            <label>Environment</label>
+
+<select id="environment">
+    <option>Dev</option>
+    <option>QA</option>
+    <option>Prod</option>
+</select>
     `;
 }
 
@@ -264,6 +271,8 @@ document.getElementById("multiStepForm")
 
         const resourceGroup =
             document.getElementById("resourceGroup")?.value || "";
+        const environment =
+    document.getElementById("environment")?.value || "Dev";
 
         outputTitle.textContent =
             "Generated Azure DevOps YAML";
@@ -274,7 +283,8 @@ document.getElementById("multiStepForm")
             target,
             serviceConnection,
             appName,
-            resourceGroup
+            resourceGroup,
+            environment
         );
 
         output.value = yamlCode;
@@ -295,10 +305,15 @@ function generateDynamicYAML(
     target,
     serviceConnection,
     appName,
-    resourceGroup
+    resourceGroup,
+    environment
 ) {
 
     let buildSteps = "";
+    let testSteps = `
+- script: echo Running Tests...
+  displayName: Run Tests
+`;
 
     // Backend Build Logic
     if (backend === "NodeJS") {
@@ -368,19 +383,58 @@ function generateDynamicYAML(
 `;
     }
 
-    return `
+   return `
 trigger:
 - main
 
-pool:
-  vmImage: ubuntu-latest
+stages:
 
-steps:
+- stage: Build
+  jobs:
+
+  - job: BuildJob
+
+    pool:
+      vmImage: ubuntu-latest
+
+    steps:
 
 ${buildSteps}
 
-${deployStep}
-`;
+- stage: Test
+
+  dependsOn: Build
+
+  jobs:
+
+  - job: TestJob
+
+    pool:
+      vmImage: ubuntu-latest
+
+    steps:
+
+${testSteps}
+
+- stage: Deploy
+
+  dependsOn: Test
+
+  jobs:
+
+  - deployment: DeployJob
+
+    environment: ${environment}
+
+    pool:
+      vmImage: ubuntu-latest
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+${deployStep}`;
 }
 function generateTerraform() {
     const location =
@@ -413,7 +467,8 @@ resource "azurerm_resource_group" "rg" {
 
         tf += `
 resource "azurerm_storage_account" "storage" {
-  name = "${document.getElementById('storageName')?.value || 'demostorage'}"
+  name                     = "${document.getElementById('storageName')?.value || 'demostorage'}"
+  resource_group_name      = azurerm_resource_group.rg.name
   location                 = "${location}"
   account_tier             = "Standard"
   account_replication_type = "LRS"
@@ -425,24 +480,58 @@ resource "azurerm_storage_account" "storage" {
 
         tf += `
 resource "azurerm_virtual_network" "vnet" {
-  name = "${document.getElementById('vnetName')?.value || 'demo-vnet'}"
-  location = "${location}"
-  address_space = ["10.0.0.0/16"]
+  name                = "${document.getElementById('vnetName')?.value || 'demo-vnet'}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = "${location}"
+  address_space       = ["10.0.0.0/16"]
 }
 `;
     }
 
-    if (document.getElementById("vmCheck")?.checked) {
+   if (document.getElementById("vmCheck")?.checked) {
 
-        tf += `
+    tf += `
+resource "azurerm_subnet" "subnet" {
+  name                 = "${subnetName}"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+}
+
+resource "azurerm_public_ip" "pip" {
+  name                = "${publicIpName}"
+  location            = "${location}"
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method   = "Dynamic"
+}
+
+resource "azurerm_network_interface" "nic" {
+  name                = "${nicName}"
+  location            = "${location}"
+  resource_group_name = azurerm_resource_group.rg.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.subnet.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.pip.id
+  }
+}
+
 resource "azurerm_linux_virtual_machine" "vm" {
-  name           = "${document.getElementById('vmName')?.value || 'demo-vm'}"
-  location       = "${location}"
+  name                = "${document.getElementById('vmName')?.value || 'demo-vm'}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = "${location}"
+
+  network_interface_ids = [
+    azurerm_network_interface.nic.id
+  ]
+
   size           = "${document.getElementById('vmSize')?.value || 'Standard_B1s'}"
   admin_username = "${document.getElementById('adminUser')?.value || 'azureuser'}"
 }
 `;
-    }
+}
 
     return tf;
 }
