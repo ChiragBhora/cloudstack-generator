@@ -90,41 +90,60 @@ deploymentType.addEventListener("change", () => {
     `;
 }
 
-    else if (deploymentType.value === "infrastructure") {
+   else if (deploymentType.value === "infrastructure") {
 
-        dynamicFields.innerHTML = `
-            <label>IaC Tool</label>
-            <select>
-                <option>Terraform</option>
-            </select>
+    dynamicFields.innerHTML = `
+        <label>IaC Tool</label>
+        <select>
+            <option>Terraform</option>
+        </select>
 
-            <label>Cloud Provider</label>
-            <select>
-                <option>Azure</option>
-            </select>
+        <label>Cloud Provider</label>
+        <select>
+            <option>Azure</option>
+        </select>
 
-            <label>Resources</label>
+        <label>Resources</label>
 
-            <div class="checkbox-group">
+        <div class="checkbox-group">
 
-                <label>
-                    <input type="checkbox" id="vmCheck">
-                    Virtual Machine
-                </label>
+            <label>
+                <input type="checkbox" id="rgCheck">
+                Resource Group
+            </label>
 
-            </div>
+            <label>
+                <input type="checkbox" id="vmCheck">
+                Virtual Machine
+            </label>
 
-            <div id="resourceConfig"></div>
-        `;
-    }
+            <label>
+                <input type="checkbox" id="storageCheck">
+                Storage Account
+            </label>
+
+            <label>
+                <input type="checkbox" id="vnetCheck">
+                Virtual Network
+            </label>
+
+        </div>
+
+        <div id="resourceConfig"></div>
+    `;
+}
 });
-
 // ------------------------
 // VM Configuration
 // ------------------------
 document.addEventListener("change", (event) => {
 
-    if (event.target.id !== "vmCheck") {
+    if (
+        event.target.id !== "rgCheck" &&
+        event.target.id !== "vmCheck" &&
+        event.target.id !== "storageCheck" &&
+        event.target.id !== "vnetCheck"
+    ) {
         return;
     }
 
@@ -132,9 +151,21 @@ document.addEventListener("change", (event) => {
 
     if (!configDiv) return;
 
-    if (event.target.checked) {
+    let html = "";
 
-        configDiv.innerHTML = `
+    if (document.getElementById("rgCheck")?.checked) {
+
+        html += `
+            <h3>Resource Group</h3>
+
+            <label>RG Name</label>
+            <input type="text" id="rgName">
+        `;
+    }
+
+    if (document.getElementById("vmCheck")?.checked) {
+
+        html += `
             <h3>Virtual Machine</h3>
 
             <label>VM Name</label>
@@ -151,9 +182,28 @@ document.addEventListener("change", (event) => {
             <input type="text" id="adminUser">
         `;
     }
-    else {
-        configDiv.innerHTML = "";
+
+    if (document.getElementById("storageCheck")?.checked) {
+
+        html += `
+            <h3>Storage Account</h3>
+
+            <label>Storage Name</label>
+            <input type="text" id="storageName">
+        `;
     }
+
+    if (document.getElementById("vnetCheck")?.checked) {
+
+        html += `
+            <h3>Virtual Network</h3>
+
+            <label>VNet Name</label>
+            <input type="text" id="vnetName">
+        `;
+    }
+
+    configDiv.innerHTML = html;
 });
 // ------------------------
 // Generate Output
@@ -203,22 +253,11 @@ document.getElementById("multiStepForm")
 
     else if (deploymentType.value === "infrastructure") {
 
-        outputTitle.textContent =
-            "Generated Terraform";
+    outputTitle.textContent =
+        "Generated Terraform";
 
-        output.value = `
-resource "azurerm_resource_group" "rg" {
-  name     = "demo-rg"
-  location = "Central India"
+    output.value = generateTerraform();
 }
-
-resource "azurerm_linux_virtual_machine" "vm" {
-  name           = "demo-vm"
-  size           = "Standard_B1s"
-  admin_username = "azureuser"
-}
-`;
-    }
 
 });
 function generateDynamicYAML(
@@ -313,6 +352,53 @@ ${buildSteps}
 
 ${deployStep}
 `;
+}
+function generateTerraform() {
+
+    let tf = "";
+
+    if (document.getElementById("rgCheck")?.checked) {
+
+        tf += `
+resource "azurerm_resource_group" "rg" {
+  name     = "${document.getElementById('rgName')?.value || 'demo-rg'}"
+  location = "Central India"
+}
+`;
+    }
+
+    if (document.getElementById("storageCheck")?.checked) {
+
+        tf += `
+resource "azurerm_storage_account" "storage" {
+  name = "${document.getElementById('storageName')?.value || 'demostorage'}"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+`;
+    }
+
+    if (document.getElementById("vnetCheck")?.checked) {
+
+        tf += `
+resource "azurerm_virtual_network" "vnet" {
+  name = "${document.getElementById('vnetName')?.value || 'demo-vnet'}"
+  address_space = ["10.0.0.0/16"]
+}
+`;
+    }
+
+    if (document.getElementById("vmCheck")?.checked) {
+
+        tf += `
+resource "azurerm_linux_virtual_machine" "vm" {
+  name = "${document.getElementById('vmName')?.value || 'demo-vm'}"
+  size = "Standard_B1s"
+}
+`;
+    }
+
+    return tf;
 }
 document
 .getElementById("downloadBtn")
