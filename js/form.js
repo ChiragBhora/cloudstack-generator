@@ -192,6 +192,23 @@ document.addEventListener("change", (event) => {
     type="text"
     id="variableGroup"
     placeholder="My-Variable-Group">
+    <label>Enable Docker Build</label>
+<select id="dockerEnabled">
+    <option>No</option>
+    <option>Yes</option>
+</select>
+
+<label>Docker Image Name</label>
+<input
+    type="text"
+    id="dockerImageName"
+    placeholder="myapp">
+
+<label>Azure Container Registry</label>
+<input
+    type="text"
+    id="acrName"
+    placeholder="myacr.azurecr.io">
         `;
     }
 
@@ -443,6 +460,14 @@ document.getElementById("multiStepForm")
             || "Release";
         const variableGroup =
             document.getElementById("variableGroup")?.value || "";
+        const dockerEnabled =
+            document.getElementById("dockerEnabled")?.value || "No";
+
+        const dockerImageName =
+            document.getElementById("dockerImageName")?.value || "";
+
+        const acrName =
+            document.getElementById("acrName")?.value || "";
     
         outputTitle.textContent =
             "Generated Azure DevOps YAML";
@@ -463,6 +488,9 @@ document.getElementById("multiStepForm")
         dotnetVersion,
         buildConfiguration,
         variableGroup,
+        dockerEnabled,
+        dockerImageName,
+        acrName,
         repoType,
         repoName,
         repoUrl

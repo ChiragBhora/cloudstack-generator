@@ -13,10 +13,14 @@ function generateDynamicYAML(
     dotnetVersion,
     buildConfiguration,
     variableGroup,
+    dockerEnabled,
+    dockerImageName,
+    acrName,
     repoType,
     repoName,
     repoUrl
-) {
+) 
+{
       let variableGroupBlock = "";
 
     if (variableGroup.trim()) {
@@ -24,7 +28,27 @@ function generateDynamicYAML(
         variableGroupBlock = `- group: ${variableGroup}
 `;
     }
+let dockerSteps = "";
 
+if (dockerEnabled === "Yes") {
+
+    dockerSteps = `
+- task: Docker@2
+  displayName: Build Docker Image
+
+  inputs:
+    command: build
+    Dockerfile: '**/Dockerfile'
+    repository: '${dockerImageName}'
+
+- task: Docker@2
+  displayName: Push Docker Image
+
+  inputs:
+    command: push
+    repository: '${dockerImageName}'
+`;
+}
     let buildSteps = "";
     let frontendBuild = "";
 
@@ -194,6 +218,7 @@ ${variableGroupBlock}
 ${frontendBuild}
 
 ${buildSteps}
+${dockerSteps}
 
       - task: PublishBuildArtifacts@1
         inputs:
