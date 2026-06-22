@@ -21,8 +21,8 @@ function generateDynamicYAML(
 
     if (variableGroup.trim()) {
 
-        variableGroupBlock = `
-- group: ${variableGroup}`;
+        variableGroupBlock = `- group: ${variableGroup}
+`;
     }
 
     let buildSteps = "";
@@ -166,12 +166,19 @@ trigger:
     include:
       - main
       - develop
-      name: $(Date:yyyyMMdd)$(Rev:.r)
-variables:${variableGroupBlock}
 
-  buildConfiguration: ${buildConfiguration}
-  environmentName: ${environment}
-stages:
+    name: $(Date:yyyyMMdd)$(Rev:.r)
+
+variables:
+${variableGroupBlock}
+- name: buildConfiguration
+  value: ${buildConfiguration}
+
+- name: environmentName
+  value: ${environment}
+
+- name: environmentName
+  value: ${environment}
 
 - stage: Build
 
