@@ -150,7 +150,11 @@ document.addEventListener("change", (event) => {
                 <option>Azure App Service</option>
                 <option>Azure VM</option>
             </select>
-
+            <label>Deployment Slot</label>
+            <select id="deploymentSlot">
+                <option>production</option>
+                <option>staging</option>
+            </select>
             <label>Azure Service Connection</label>
             <input
                 type="text"
@@ -176,39 +180,39 @@ document.addEventListener("change", (event) => {
                 <option>Prod</option>
             </select>
             <label>Agent OS</label>
-<select id="agentOS">
-    <option>ubuntu-latest</option>
-    <option>windows-latest</option>
-    <option>macos-latest</option>
-</select>
+            <select id="agentOS">
+                <option>ubuntu-latest</option>
+                <option>windows-latest</option>
+                <option>macos-latest</option>
+            </select>
 
-<label>Build Configuration</label>
-<select id="buildConfiguration">
-    <option>Debug</option>
-    <option>Release</option>
-</select>
-<label>Variable Group</label>
-<input
-    type="text"
-    id="variableGroup"
-    placeholder="My-Variable-Group">
-    <label>Enable Docker Build</label>
-<select id="dockerEnabled">
-    <option>No</option>
-    <option>Yes</option>
-</select>
+            <label>Build Configuration</label>
+            <select id="buildConfiguration">
+                <option>Debug</option>
+                <option>Release</option>
+            </select>
+            <label>Variable Group</label>
+            <input
+            type="text"
+            id="variableGroup"
+            placeholder="My-Variable-Group">
+            <label>Enable Docker Build</label>
+            <select id="dockerEnabled">
+                <option>No</option>
+                <option>Yes</option>
+            </select>
 
-<label>Docker Image Name</label>
-<input
-    type="text"
-    id="dockerImageName"
-    placeholder="myapp">
+            <label>Docker Image Name</label>
+            <input
+            type="text"
+            id="dockerImageName"
+            placeholder="myapp">
 
-<label>Azure Container Registry</label>
-<input
-    type="text"
-    id="acrName"
-    placeholder="myacr.azurecr.io">
+            <label>Azure Container Registry</label>
+            <input
+            type="text"
+            id="acrName"
+            placeholder="myacr.azurecr.io">
         `;
     }
 
@@ -430,6 +434,8 @@ document.getElementById("multiStepForm")
 
         const appName =
             document.getElementById("appName")?.value || "";
+        const deploymentSlot =
+            document.getElementById("deploymentSlot")?.value || "production";
 
         if (
             !validateApplication(
@@ -479,6 +485,7 @@ document.getElementById("multiStepForm")
         target,
         serviceConnection,
         appName,
+        deploymentSlot,
         resourceGroup,
         environment,
         agentOS,

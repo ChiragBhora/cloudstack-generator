@@ -4,6 +4,7 @@ function generateDynamicYAML(
     target,
     serviceConnection,
     appName,
+    deploymentSlot,
     resourceGroup,
     environment,
     agentOS,
@@ -165,6 +166,7 @@ else if (frontend === "HTML/CSS/JS") {
     azureSubscription: '${serviceConnection}'
     appName: '${appName}'
     resourceGroupName: '${resourceGroup}'
+     slotName: '${deploymentSlot}'
 `;
     }
 
