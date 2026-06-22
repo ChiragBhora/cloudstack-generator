@@ -12,7 +12,7 @@ function generateDynamicYAML(
     javaVersion,
     dotnetVersion,
     buildConfiguration,
-    VariableGroup,
+    variableGroup,
     repoType,
     repoName,
     repoUrl
