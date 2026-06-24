@@ -155,6 +155,11 @@ document.addEventListener("change", (event) => {
                 <option>production</option>
                 <option>staging</option>
             </select>
+            <label>Require Approval</label>
+            <select id="approvalRequired">
+                <option>No</option>
+                <option>Yes</option>
+            </select>
             <label>Azure Service Connection</label>
             <input
                 type="text"
