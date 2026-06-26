@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudStack Generator</title>
+    <meta name="description" content="CloudStack Generator - Azure DevOps & Terraform Pipeline Generator">
+    <meta name="author" content="CloudStack Generator">
+    <title>CloudStack Generator | Azure DevOps & Terraform</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <div class="container">
 
-    <h1>☁️ CloudStack Generator</h1>
+<h1>☁️ CloudStack Generator</h1>
+
+<p class="version">
+    Enterprise Azure DevOps & Terraform Generator v1.0
+</p>
     <p>
 Generate Azure DevOps Pipelines and Terraform Infrastructure with Zero Coding
 </p>
@@ -43,6 +49,24 @@ Generate Azure DevOps Pipelines and Terraform Infrastructure with Zero Coding
                 <option>Azure Repos</option>
                 <option>GitLab</option>
             </select>
+            <label>Project Description</label>
+<textarea
+    id="projectDescription"
+    rows="3"
+    placeholder="Short description of your project"></textarea>
+
+<label>Pipeline Name</label>
+<input
+    type="text"
+    id="pipelineName"
+    placeholder="CloudStack-CI-CD">
+
+<label>Pipeline Trigger</label>
+<select id="pipelineTrigger">
+    <option value="main">main</option>
+    <option value="develop">develop</option>
+    <option value="feature/*">feature/*</option>
+</select>
 
             <button type="button" class="nextBtn">
                 Next
@@ -145,7 +169,9 @@ Generate Azure DevOps Pipelines and Terraform Infrastructure with Zero Coding
     </form>
 
 </div>
-<script src="js/generator.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/devops.js"></script>
+<script src="js/terraform.js"></script>
 <script src="js/validator.js"></script>
 <script src="js/download.js"></script>
 <script src="js/form.js"></script>
