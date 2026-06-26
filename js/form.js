@@ -1,3 +1,9 @@
+// ============================================
+// CloudStack Generator - Form Controller
+// ============================================
+// NOTE: This file intentionally uses global functions (helpers.js/validator.js/etc)
+// to remain compatible with index.html script loading order.
+
 const steps = document.querySelectorAll(".step");
 const nextBtns = document.querySelectorAll(".nextBtn");
 const prevBtns = document.querySelectorAll(".prevBtn");
@@ -5,51 +11,31 @@ const progressBar = document.getElementById("progressBar");
 
 let currentStep = 0;
 
-// ------------------------
-// Step Navigation
-// ------------------------
 function updateForm() {
+  steps.forEach((step, index) => {
+    step.classList.toggle("active", index === currentStep);
+  });
 
-    steps.forEach((step, index) => {
-        step.classList.toggle(
-            "active",
-            index === currentStep
-        );
-    });
-
-    const progress =
-        ((currentStep + 1) / steps.length) * 100;
-
-    progressBar.style.width =
-        progress + "%";
+  const progress = ((currentStep + 1) / steps.length) * 100;
+  if (progressBar) progressBar.style.width = progress + "%";
 }
 
-nextBtns.forEach(btn => {
-
-    btn.addEventListener("click", () => {
-
-        if (currentStep < steps.length - 1) {
-
-            currentStep++;
-
-            updateForm();
-        }
-    });
-
+nextBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    if (currentStep < steps.length - 1) {
+      currentStep++;
+      updateForm();
+    }
+  });
 });
 
-prevBtns.forEach(btn => {
-
-    btn.addEventListener("click", () => {
-
-        if (currentStep > 0) {
-
-            currentStep--;
-
-            updateForm();
-        }
-    });
-
+prevBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    if (currentStep > 0) {
+      currentStep--;
+      updateForm();
+    }
+  });
 });
 
 updateForm();
@@ -58,91 +44,43 @@ updateForm();
 // Generate Output
 // ------------------------
 
-document.getElementById("multiStepForm")
-.addEventListener("submit", (e) => {
+document.getElementById("multiStepForm").addEventListener("submit", (e) => {
+  e.preventDefault();
 
-    e.preventDefault();
+  // These are used by validators & generators.
+  const repoType = getValue("repoType");
+  const repoName = getValue("repoName");
+  const repoUrl = getValue("repoUrl");
 
-    const output =
-        document.getElementById("terraformOutput");
+  if (!validateProject()) return;
 
-    const outputTitle =
-        document.getElementById("outputTitle");
-    const repoName =
-        document.getElementById("repoName")?.value || "";
-    const repoUrl =
-        document.getElementById("repoUrl")?.value || "";
-    const repoType =
-        document.getElementById("repoType")?.value || "";
+  if (deploymentType.value === "application") {
+    const frontend = getValue("frontend");
+    const backend = getValue("backend");
+    const target = getValue("target");
+    const serviceConnection = getValue("serviceConnection");
+    const appName = getValue("appName");
+    const deploymentSlot = getValue("deploymentSlot", "production");
+    const resourceGroup = getValue("resourceGroup");
+    const environment = getValue("environment", "Dev");
+    const agentOS = getValue("agentOS", "ubuntu-latest");
+    const nodeVersion = getValue("nodeVersion", "18.x");
+    const pythonVersion = getValue("pythonVersion", "3.11");
+    const javaVersion = getValue("javaVersion", "17");
+    const dotnetVersion = getValue("dotnetVersion", "8.0");
+    const buildConfiguration = getValue("buildConfiguration", "Release");
+    const variableGroup = getValue("variableGroup");
+    const dockerEnabled = getValue("dockerEnabled", "No");
+    const dockerImageName = getValue("dockerImageName");
+    const acrName = getValue("acrName");
 
-    if (!validateProject()) {
-        return;
-    }
+    if (!validateApplication(serviceConnection, appName)) return;
 
-    if (deploymentType.value === "application") {
-
-        const frontend =
-            document.getElementById("frontend")?.value || "";
-
-        const backend =
-            document.getElementById("backend")?.value || "";
-
-        const target =
-            document.getElementById("target")?.value || "";
-
-        const serviceConnection =
-            document.getElementById("serviceConnection")?.value || "";
-
-        const appName =
-            document.getElementById("appName")?.value || "";
-        const deploymentSlot =
-            document.getElementById("deploymentSlot")?.value || "production";
-
-        if (
-            !validateApplication(
-                serviceConnection,
-                appName
-            )
-        ) {
-            return;
-        }
-
-        const resourceGroup =
-            document.getElementById("resourceGroup")?.value || "";
-
-        const environment =
-            document.getElementById("environment")?.value || "Dev";
-        const agentOS =
-            document.getElementById("agentOS")?.value || "ubuntu-latest";
-        const nodeVersion =
-            document.getElementById("nodeVersion")?.value || "18.x";
-        const pythonVersion =
-            document.getElementById("pythonVersion")?.value || "3.11";
-        const javaVersion =
-            document.getElementById("javaVersion")?.value || "17";
-        const dotnetVersion =
-            document.getElementById("dotnetVersion")?.value || "8.0";
-        const buildConfiguration =
-            document.getElementById("buildConfiguration")?.value
-            || "Release";
-        const variableGroup =
-            document.getElementById("variableGroup")?.value || "";
-        const dockerEnabled =
-            document.getElementById("dockerEnabled")?.value || "No";
-
-        const dockerImageName =
-            document.getElementById("dockerImageName")?.value || "";
-
-        const acrName =
-            document.getElementById("acrName")?.value || "";
-    
-        outputTitle.textContent =
-            "Generated Azure DevOps YAML";
-
-        output.value = 
-        generateDynamicYAML(
-            frontend,
-        backend,    
+    setTitle("Generated Azure DevOps YAML");
+    setOutput(
+      generateDynamicYAML(
+        frontend,
+        backend,
         target,
         serviceConnection,
         appName,
@@ -162,19 +100,13 @@ document.getElementById("multiStepForm")
         repoType,
         repoName,
         repoUrl
-);
-    }
+      )
+    );
+  } else if (deploymentType.value === "infrastructure") {
+    if (!validateInfrastructure()) return;
 
-    else if (deploymentType.value === "infrastructure") {
-
-        if (!validateInfrastructure()) {
-            return;
-        }
-
-        outputTitle.textContent =
-            "Generated Terraform";
-
-        output.value =
-            generateTerraform();
-    }
+    setTitle("Generated Terraform");
+    setOutput(generateTerraform());
+  }
 });
+
