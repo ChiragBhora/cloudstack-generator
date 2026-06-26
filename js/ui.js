@@ -1,9 +1,6 @@
 // ============================================
 // CloudStack Generator - UI Module
 // ============================================
-
-import { el, setHTML } from "./helpers.js";
-
 const deploymentType = document.getElementById("deploymentType");
 const dynamicFields = document.getElementById("dynamicFields");
 
@@ -371,9 +368,8 @@ function handleInfrastructureChange(event) {
         event.target.checked
     ) {
 
-        getElement("rgCheck").checked = true;
-        getElement("vnetCheck").checked = true;
-
+        document.getElementById("rgCheck").checked = true;
+        document.getElementById("vnetCheck").checked = true;
     }
 
     let html = "";

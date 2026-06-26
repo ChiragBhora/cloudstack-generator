@@ -43,7 +43,6 @@ updateForm();
 // ------------------------
 // Generate Output
 // ------------------------
-
 document.getElementById("multiStepForm").addEventListener("submit", (e) => {
   e.preventDefault();
 
